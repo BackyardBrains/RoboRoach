@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>2063883453</fileChecksum>
+  <configuration>
+    <name>PAN1720 Debug</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>PAN1720 Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>PAN1721 Debug</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>PAN1721 Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>S2 Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_defs.h</file>
+      <file>$PROJ_DIR$\..\..\..\Profiles\Include\gattservapp.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_devinfoservice.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\gatt.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\l2cap.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\OSAL_Memory.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\OSAL_Timers.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_app.c</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_profile.c</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_devinfoservice.c</file>
+      <file>$PROJ_DIR$\..\..\..\Libraries\CC2540\BR-LE4.0-S2\AT.e-S2-Debug.lib</file>
+      <file>$PROJ_DIR$\..\..\..\Libraries\CC2540\CC2540_ble_single_chip_all.lib</file>
+      <file>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Memory.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\gatt_uuid.h</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\roboroach_profile.r51</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\roboroach_devinfoservice.r51</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\roboroach_devinfoservice.pbi</file>
+      <file>$PROJ_DIR$\S2 Debug\Exe\RoboRoachApp.d51</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\OSAL_Memory.r51</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\roboroach_profile.pbi</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\roboroach_app.pbi</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\OSAL_Memory.pbi</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\roboroach_app.r51</file>
+      <file>$PROJ_DIR$\S2 Debug\Obj\RoboRoachApp.pbd</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\linkdb.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\att.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\bcomdef.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_assert.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_pio.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdarg.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\math.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_uart.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\at\include\at_lib.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\hci.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\ll.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdio.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_app.h</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\osal_pwrmgr.h</file>
+      <file>$PROJ_DIR$\..\..\..\Tools\Linker\ti_51ew_cc2540b.xcl</file>
+      <file>$PROJ_DIR$\S2 Debug\List\RoboRoachApp.map</file>
+      <file>$TOOLKIT_DIR$\inc\clib\limits.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\comdef.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\OSAL.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_mcu.h</file>
+      <file>$TOOLKIT_DIR$\inc\ioCC2540.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_profile.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_types.h</file>
+    </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 17 41</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_app.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 44 42 45 43 49 0 5 6 39 34 27 35 28 29 46 47 32 33 36 30 37 2 48</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 44 42 45 43 49 0 5 6 39 34 27 35 28 29 46 47 32 33 36 30 37 2 48</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_profile.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27 43 49 0 44 42 45 5 6 24 25 4 3 13 1 31 33 36 30 48</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 27 43 49 0 44 42 45 5 6 24 25 4 3 13 1 31 33 36 30 48</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_devinfoservice.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 15</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 26 45 27 43 49 0 44 42 5 6 24 25 4 3 13 1 2</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 26 45 27 43 49 0 44 42 5 6 24 25 4 3 13 1 2</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Memory.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 21</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 43 49 0 44 42 45 5 6 46 47</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 43 49 0 44 42 45 5 6 46 47</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\S2 Debug\Exe\RoboRoachApp.d51</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 41</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 40 18 22 15 14 10 11 38</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>S2 Release</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_defs.h</file>
+      <file>$PROJ_DIR$\..\..\..\Profiles\Include\gattservapp.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_devinfoservice.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\gatt.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\l2cap.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_GATTprofile.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\OSAL_Memory.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\OSAL_Timers.h</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_GATTprofile.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_devinfoservice.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_devinfoservice.pbi</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\bybinfoservice.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Exe\RoboRoachApp.a51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\at_app.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_GATTprofile.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\Tools\Linker\br_le40_sx.xcl</file>
+      <file>$PROJ_DIR$\..\Source\byb_app.h</file>
+      <file>$PROJ_DIR$\..\..\..\Profiles\DevInfo\devinfoservice.c</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\devinfoservice.r51</file>
+      <file>$PROJ_DIR$\..\..\..\Profiles\DevInfo\devinfoservice.h</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\OSAL_Memory.r51</file>
+      <file>$PROJ_DIR$\..\Source\at_app.c</file>
+      <file>$PROJ_DIR$\..\Source\byb_app.c</file>
+      <file>$PROJ_DIR$\S2 Release\List\RoboRoachApp.map</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\at_app.pbi</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\byb_app.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\OSAL_Memory.pbi</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\devinfoservice.pbi</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_app.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\byb_app.pbi</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_app.pbi</file>
+      <file>$PROJ_DIR$\..\Source\devinfoservice.c</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_GATTprofile.h</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_profile.r51</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\roboroach_profile.pbi</file>
+      <file>$PROJ_DIR$\..\Source\devinfoservice.h</file>
+      <file>$PROJ_DIR$\S2 Release\Obj\bybinfoservice.pbi</file>
+      <file>$PROJ_DIR$\..\Source\bybinfoservice.c</file>
+      <file>$PROJ_DIR$\..\Source\bybinfoservice.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_app.c</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_profile.c</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_devinfoservice.c</file>
+      <file>$PROJ_DIR$\..\..\..\Libraries\CC2540\BR-LE4.0-S2\AT.e-S2-Release.lib</file>
+      <file>$PROJ_DIR$\..\..\..\Libraries\CC2540\CC2540_ble_single_chip_all.lib</file>
+      <file>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Memory.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\gatt_uuid.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\linkdb.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\att.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\bcomdef.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_assert.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_pio.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdarg.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\math.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_uart.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\at\include\at_lib.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\hci.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\ble\include\ll.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\stdio.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_app.h</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl-pli-blxd-1e16x01.r51</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\osal_pwrmgr.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\limits.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\comdef.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\osal\include\OSAL.h</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_mcu.h</file>
+      <file>$TOOLKIT_DIR$\inc\ioCC2540.h</file>
+      <file>$PROJ_DIR$\..\Source\roboroach_profile.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\components\hal\include\hal_types.h</file>
+    </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 12 23</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_GATTprofile.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 8</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49 63 69 0 64 62 65 6 7 46 47 4 3 45 1 32</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 49 63 69 0 64 62 65 6 7 46 47 4 3 45 1 32</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\S2 Release\Exe\RoboRoachApp.a51</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 15 20 28 9 33 42 43 60</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\Profiles\DevInfo\devinfoservice.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 19</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\at_app.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 24</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 13</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\byb_app.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 29</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 25</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 64 62 65 63 69 0 6 7 61 56 49 57 50 51 66 67 54 55 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\devinfoservice.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 35</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 1 35</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\bybinfoservice.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 36</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 11</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 1 38</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 1 38</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_app.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 30</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 28</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 64 62 65 63 69 0 6 7 61 56 49 57 50 51 66 67 54 55 58 52 59 2 68</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 64 62 65 63 69 0 6 7 61 56 49 57 50 51 66 67 54 55 58 52 59 2 68</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_profile.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 34</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 33</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49 63 69 0 64 62 65 6 7 46 47 4 3 45 1 53 55 58 52 68</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 49 63 69 0 64 62 65 6 7 46 47 4 3 45 1 53 55 58 52 68</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\roboroach_devinfoservice.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 10</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 9</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 1 2</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 48 65 49 63 69 0 64 62 6 7 46 47 4 3 45 1 2</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Memory.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 26</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 20</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 63 69 0 64 62 65 6 7 66 67</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 63 69 0 64 62 65 6 7 66 67</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>S3 Debug</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>S3 Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+
