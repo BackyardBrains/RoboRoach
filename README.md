@@ -19,4 +19,8 @@ We tried 2 versions.  The first was using the BlueRadio AT.e firmware.  This all
 
 Software
 --------
-Our current release only supports iOS devices.  Native support only for Apple mobile devices released after October  2011 (iPhone 4s and later).  Due to the lack of BLE support on Android at the moment, we will only support the Motorola Razor (coming soon). We also need to add support for native iPad interface.
+Our current release only supports iOS devices.  Native support only for Apple mobile devices released after October  2011 (iPhone 4s and later). 
+
+![iOS Interface](http://backyardbrains.com/products/img/roboRoach.iOS.jpg)
+
+ Due to the lack of BLE support on Android at the moment, we will only support the Motorola Razor (coming soon). We also need to add support for native iPad interface.
