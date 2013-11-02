@@ -23,7 +23,6 @@ typedef enum {
 @property (nonatomic, copy) NSNumber *frequency;
 @property (nonatomic, copy) NSNumber *gain;
 @property (nonatomic, copy) NSNumber *pulseWidth;
-@property (nonatomic, copy) NSNumber *numberOfPulses;
 @property (nonatomic, copy) NSNumber *duration;
 @property (strong, nonatomic) CBPeripheral *peripheral;
 @property (nonatomic, copy) NSNumber *batteryLevel;

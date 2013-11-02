@@ -98,8 +98,8 @@ id <BYBRoboRoachManagerDelegate> delegate;
     data = self.activeRoboRoach.pulseWidth.integerValue;
     [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
 
-    data = self.activeRoboRoach.numberOfPulses.integerValue;
-    [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_NUMPULSES_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+    data = self.activeRoboRoach.duration.integerValue/5; //Note we need to divide by 5ms.
+    [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
     
     data = self.activeRoboRoach.randomMode.integerValue;
     [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
@@ -297,14 +297,13 @@ id <BYBRoboRoachManagerDelegate> delegate;
                 NSLog(@"[peripheral] didUpdateValueForChar PW   (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
                 break;
             }
-            case BYB_ROBOROACH_CHAR_NUMPULSES_UUID:
+            case BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.numberOfPulses = [NSNumber numberWithUnsignedChar:(unsigned char)value];
-                self.activeRoboRoach.duration = @([self.activeRoboRoach.numberOfPulses floatValue] / [self.activeRoboRoach.frequency floatValue] * 1000);
-                NSLog(@"[peripheral] didUpdateValueForChar NumP (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
-                NSLog(@"[peripheral]         Recalculating Dura (%@)", self.activeRoboRoach.duration);
+                NSNumber *numberOf5msSteps = [NSNumber numberWithUnsignedChar:(unsigned char)value];
+                self.activeRoboRoach.duration = [NSNumber numberWithInt:[numberOf5msSteps integerValue] * 5]; //Note: in 5ms steps.
+                NSLog(@"[peripheral] didUpdateValueForChar Duration (%s, %@ *5ms = %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value], self.activeRoboRoach.duration);
                 break;
             }
             case BYB_ROBOROACH_CHAR_RANDOMMODE_UUID:
@@ -386,7 +385,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
                     
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_FREQUENCY_UUID];
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID];
-                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_NUMPULSES_UUID];
+                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_DURATION_IN_5MS_INTERVALS_UUID];
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID];
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID];
                     [self readValue:BATTERY_SERVICE_UUID characteristicUUID:

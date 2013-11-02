@@ -38,7 +38,7 @@ SCTextFieldCell *hardwareCell;
     [super viewDidLoad];
     
     
-    self.roboRoach.duration = [NSNumber numberWithDouble:[self.roboRoach.numberOfPulses  doubleValue] * 1000 / [self.roboRoach.frequency doubleValue]];
+    //self.roboRoach.duration = [NSNumber numberWithDouble:[self.roboRoach.numberOfPulses  doubleValue] * 1000 / [self.roboRoach.frequency doubleValue]];
     
 
     tableViewModel = [[SCTableViewModel alloc] initWithTableView:self->tableView] ;
@@ -49,7 +49,8 @@ SCTextFieldCell *hardwareCell;
     
     gainSlider = [SCSliderCell cellWithText:@"Gain" boundObject:self.roboRoach boundPropertyName:@"gain" ];
     gainSlider.slider.minimumValue = 0;
-    gainSlider.slider.maximumValue = 255;
+    gainSlider.slider.maximumValue = 100;
+    
     [stimulationSection addCell:gainSlider];
     
     durationSlider = [SCSliderCell cellWithText:@"Duration" boundObject:self.roboRoach boundPropertyName:@"duration"  ];
@@ -137,9 +138,11 @@ SCTextFieldCell *hardwareCell;
     //NSLog(@"period: %f", period);
     
     float x = STIMLINE_OFFSET;
-    float gain = [self.roboRoach.gain floatValue]/255;
+    float gain = [self.roboRoach.gain floatValue]/100;
     
-    for (int i = 0; i < [self.roboRoach.numberOfPulses intValue]; i++)
+    float totalDuration = 0;
+    
+    while( totalDuration < [self.roboRoach.duration floatValue]/1000)
     {
         
         if ( [self.roboRoach.randomMode boolValue]){
@@ -149,6 +152,7 @@ SCTextFieldCell *hardwareCell;
             period = period/1000;
         }
         
+        totalDuration += period;
         
         //Go Up
         CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
@@ -202,20 +206,28 @@ SCTextFieldCell *hardwareCell;
 - (void) updateSettingConstraints {
     
     
+    
+    float roundedGain = round([self.roboRoach.gain floatValue]/ 5.0f) * 5.0f;
+    self.roboRoach.gain = [NSNumber numberWithFloat:roundedGain];
+    
+    float roundedDuration = round([self.roboRoach.duration floatValue]/ 5.0f) * 5.0f;
+    self.roboRoach.duration = [NSNumber numberWithFloat:roundedDuration];
+    
+    
     if ( self.roboRoach.randomMode.boolValue ){
         [freqSlider setEnabled:NO];
         [pulseWidthSlider setEnabled:NO];
         
         //This is a hack.  The random range is around 55Hz...
         //Bug...  this always gets set to 1s.  Why?
-        self.roboRoach.numberOfPulses = [NSNumber numberWithDouble:[self.roboRoach.duration doubleValue] * 55 / 1000];
+        //self.roboRoach.numberOfPulses = [NSNumber numberWithDouble:[self.roboRoach.duration doubleValue] * 55 / 1000];
         
         
     }else{
         [freqSlider setEnabled:YES];
         [pulseWidthSlider setEnabled:YES];
         
-        self.roboRoach.numberOfPulses = [NSNumber numberWithDouble:[self.roboRoach.duration intValue] * [self.roboRoach.frequency intValue] / 1000];
+        //self.roboRoach.numberOfPulses = [NSNumber numberWithDouble:[self.roboRoach.duration intValue] * [self.roboRoach.frequency intValue] / 1000];
         
         //Still a bug: The duration should round to closest value. On disconnect/connect... the values are different.
         //durationSlider.slider.minimumValue = 1000/[self.roboRoach.frequency intValue];

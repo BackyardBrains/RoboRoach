@@ -32,7 +32,7 @@ id <BYBRoboRoachDelegate> delegate;
     NSLog(@"Random Mode: %@", self.randomMode);
     NSLog(@"Frequency: %@", self.frequency);
     NSLog(@"Pulse Width: %@", self.pulseWidth);
-    NSLog(@"# Pulses: %@", self.numberOfPulses);
+    NSLog(@"Duration: %@", self.duration);
     NSLog(@"Gain: %@", self.gain);
     
     [delegate roboRoachHasChangedSettings:self];
@@ -41,9 +41,9 @@ id <BYBRoboRoachDelegate> delegate;
 - (NSString *) getStimulationString  {
     NSString * stimSettings;
     if ([self.randomMode boolValue]){
-        stimSettings = [NSString stringWithFormat:@"Randomized for %ims. %i%%", [self.duration intValue], (int)(100*[self.gain floatValue]/255) ];
+        stimSettings = [NSString stringWithFormat:@"Randomized for %ims. %i%%", [self.duration intValue], [self.gain intValue] ];
     }else{
-        stimSettings = [NSString stringWithFormat:@"%iHz, %ims pulse, for %ims. %i%%", [self.frequency intValue], [self.pulseWidth intValue], [self.duration intValue], (int)(100*[self.gain floatValue]/255)];
+        stimSettings = [NSString stringWithFormat:@"%iHz, %ims pulse, for %ims. %i%%", [self.frequency intValue], [self.pulseWidth intValue], [self.duration intValue],[self.gain intValue]];
     }
     return (stimSettings);
 }

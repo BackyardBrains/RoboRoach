@@ -87,36 +87,31 @@ BOOL isConnected = NO;
             case 0: //5Hz
                 rr.activeRoboRoach.frequency = @5;
                 rr.activeRoboRoach.pulseWidth = @20;
-                rr.activeRoboRoach.duration = @800;
-                rr.activeRoboRoach.numberOfPulses = @4;
+                rr.activeRoboRoach.duration = @600;
                 rr.activeRoboRoach.randomMode = @0;
                 break;
             case 1: //15Hz
                 rr.activeRoboRoach.frequency = @15;
                 rr.activeRoboRoach.pulseWidth = @20;
-                rr.activeRoboRoach.duration = @800;
-                rr.activeRoboRoach.numberOfPulses = @12;
+                rr.activeRoboRoach.duration = @600;
                 rr.activeRoboRoach.randomMode = @0;
                 break;
             case 2: //30Hz
                 rr.activeRoboRoach.frequency = @30;
                 rr.activeRoboRoach.pulseWidth = @10;
-                rr.activeRoboRoach.duration = @800;
-                rr.activeRoboRoach.numberOfPulses = @24;
+                rr.activeRoboRoach.duration = @600;
                 rr.activeRoboRoach.randomMode = @0;
                 break;
             case 3: //55Hz
                 rr.activeRoboRoach.frequency = @55;
                 rr.activeRoboRoach.pulseWidth = @9;
-                rr.activeRoboRoach.duration = @800;
-                rr.activeRoboRoach.numberOfPulses = @44;
+                rr.activeRoboRoach.duration = @600;
                 rr.activeRoboRoach.randomMode = @0;
                 break;
             case 4: //100Hz
                 rr.activeRoboRoach.frequency = @100;
                 rr.activeRoboRoach.pulseWidth = @5;
-                rr.activeRoboRoach.duration = @800;
-                rr.activeRoboRoach.numberOfPulses = @80;
+                rr.activeRoboRoach.duration = @600;
                 rr.activeRoboRoach.randomMode = @0;
                 break;
         }
