@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12D78" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="jgj-kF-llM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="jgj-kF-llM">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
+        <deployment defaultVersion="1536" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
     </dependencies>
     <scenes>
         <!--Robo Roach View Controller - RoboRoach-->
@@ -9,42 +10,53 @@
             <objects>
                 <viewController id="FMD-8l-Gwo" customClass="BYBRoboRoachViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="E1I-jc-U4E">
-                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gq3-Y3-sPJ">
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="157" id="Gfs-zO-uXX"/>
-                                </constraints>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="gq3-Y3-sPJ">
+                                <rect key="frame" x="89" y="427" width="157" height="30"/>
                                 <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
                                 <state key="normal" title="Find RoboRoach">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="connectButtonClicked:" destination="FMD-8l-Gwo" eventType="touchUpInside" id="mmh-bx-GFe"/>
                                 </connections>
                             </button>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="DYp-pi-V96">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" style="whiteLarge" id="DYp-pi-V96">
+                                <rect key="frame" x="142" y="115" width="37" height="37"/>
                                 <color key="color" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
-                            <imageView userInteractionEnabled="NO" contentMode="center" image="roach.png" translatesAutoresizingMaskIntoConstraints="NO" id="Uuz-eB-l79">
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="120" id="P7m-4X-mUm"/>
-                                    <constraint firstAttribute="height" constant="251" id="xey-F4-AEb"/>
-                                </constraints>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="roachHD.png" id="Uuz-eB-l79">
+                                <rect key="frame" x="102" y="137" width="120" height="251"/>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="32" maxX="0.0" maxY="-32"/>
                             </imageView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Go Left!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zh0-KN-m5u">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="BackbackHD.png" id="kF3-0c-R1N">
+                                <rect key="frame" x="112" y="198" width="110" height="187"/>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="31" maxX="0.0" maxY="-31"/>
+                            </imageView>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Go Left!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zh0-KN-m5u">
+                                <rect key="frame" x="14" y="123" width="108" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Go Right!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="frb-pM-grP">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Go Right!" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="frb-pM-grP">
+                                <rect key="frame" x="197" y="123" width="110" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DmE-lC-xnt">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="55Hz, 100ms, 1s" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="b9X-jr-z5Y">
+                                <rect key="frame" x="36" y="401" width="246" height="21"/>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="8" maxX="0.0" maxY="-8"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" segmentControlStyle="bar" selectedSegmentIndex="0" id="DmE-lC-xnt">
+                                <rect key="frame" x="14" y="79" width="293" height="29"/>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="50" maxX="0.0" maxY="-50"/>
                                 <segments>
                                     <segment title="5"/>
                                     <segment title="15"/>
@@ -55,34 +67,9 @@
                                 </segments>
                                 <color key="tintColor" red="1" green="0.50196081399917603" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </segmentedControl>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="55Hz, 100ms, 1s" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b9X-jr-z5Y">
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="246" id="GEj-FA-Vyu"/>
-                                    <constraint firstAttribute="height" constant="21" id="mVk-eC-QCC"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                         <gestureRecognizers/>
-                        <constraints>
-                            <constraint firstItem="Zh0-KN-m5u" firstAttribute="leading" secondItem="E1I-jc-U4E" secondAttribute="leading" constant="13" id="63I-9T-z49"/>
-                            <constraint firstItem="Zh0-KN-m5u" firstAttribute="top" secondItem="E1I-jc-U4E" secondAttribute="top" constant="123" id="8m1-c1-cC6"/>
-                            <constraint firstAttribute="bottom" secondItem="gq3-Y3-sPJ" secondAttribute="bottom" constant="20" symbolic="YES" type="default" id="9X8-5t-Y1Q"/>
-                            <constraint firstItem="DmE-lC-xnt" firstAttribute="top" secondItem="E1I-jc-U4E" secondAttribute="top" constant="20" symbolic="YES" type="default" id="A2k-qq-FGD"/>
-                            <constraint firstItem="DYp-pi-V96" firstAttribute="centerX" secondItem="E1I-jc-U4E" secondAttribute="centerX" type="default" id="Idg-yK-HHv"/>
-                            <constraint firstItem="DmE-lC-xnt" firstAttribute="leading" secondItem="E1I-jc-U4E" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="VHQ-Vm-G76"/>
-                            <constraint firstItem="b9X-jr-z5Y" firstAttribute="centerX" secondItem="gq3-Y3-sPJ" secondAttribute="centerX" type="default" id="Whd-he-vAh"/>
-                            <constraint firstItem="DmE-lC-xnt" firstAttribute="centerX" secondItem="b9X-jr-z5Y" secondAttribute="centerX" type="default" id="Yb7-mo-oVg"/>
-                            <constraint firstItem="DYp-pi-V96" firstAttribute="centerX" secondItem="Uuz-eB-l79" secondAttribute="centerX" type="default" id="Ycb-0k-SBb"/>
-                            <constraint firstItem="frb-pM-grP" firstAttribute="baseline" secondItem="Zh0-KN-m5u" secondAttribute="baseline" type="default" id="a2q-c9-aL8"/>
-                            <constraint firstItem="b9X-jr-z5Y" firstAttribute="top" secondItem="Uuz-eB-l79" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="mmx-GO-9Sa"/>
-                            <constraint firstItem="DYp-pi-V96" firstAttribute="top" secondItem="DmE-lC-xnt" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="qW5-kW-MdO"/>
-                            <constraint firstAttribute="trailing" secondItem="frb-pM-grP" secondAttribute="trailing" constant="16" id="qjA-70-Weq"/>
-                            <constraint firstItem="gq3-Y3-sPJ" firstAttribute="top" secondItem="b9X-jr-z5Y" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="tuC-vs-3VD"/>
-                        </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="3pb-FL-IVP" appends="YES" id="ce3-XM-G19"/>
                         </connections>
@@ -100,6 +87,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="backpackImage" destination="kF3-0c-R1N" id="JqD-wS-JH3"/>
                         <outlet property="bookmarkBar" destination="DmE-lC-xnt" id="nwp-4g-zMY"/>
                         <outlet property="bookmarkButton" destination="HVf-xR-a6C" id="fhM-aY-a1h"/>
                         <outlet property="connectButton" destination="gq3-Y3-sPJ" id="pSi-1v-Zw2"/>
@@ -125,30 +113,22 @@
             <objects>
                 <viewController id="yz8-Q6-r5r" customClass="BYBRoboRoachSettingsViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fof-mV-Glj">
-                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="xT9-f0-hpt">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="xT9-f0-hpt">
+                                <rect key="frame" x="0.0" y="187" width="320" height="293"/>
+                                <autoresizingMask key="autoresizingMask" heightSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="366" id="pnt-ir-PAj"/>
-                                </constraints>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="65" maxX="0.0" maxY="0.0"/>
                             </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GbO-OS-Hr2">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="130" id="SCm-YC-Bs9"/>
-                                </constraints>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" id="GbO-OS-Hr2">
+                                <rect key="frame" x="0.0" y="63" width="320" height="124"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="65" maxX="0.0" maxY="-65"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="GbO-OS-Hr2" firstAttribute="trailing" secondItem="fof-mV-Glj" secondAttribute="trailing" type="default" id="0Pf-D6-Ry4"/>
-                            <constraint firstItem="xT9-f0-hpt" firstAttribute="leading" secondItem="fof-mV-Glj" secondAttribute="leading" type="default" id="3R1-mb-zXq"/>
-                            <constraint firstItem="xT9-f0-hpt" firstAttribute="top" secondItem="fof-mV-Glj" secondAttribute="top" constant="131" id="4da-Kq-xGO"/>
-                            <constraint firstItem="GbO-OS-Hr2" firstAttribute="leading" secondItem="fof-mV-Glj" secondAttribute="leading" type="default" id="QyD-qq-3lr"/>
-                            <constraint firstItem="xT9-f0-hpt" firstAttribute="trailing" secondItem="fof-mV-Glj" secondAttribute="trailing" type="default" id="gGA-go-Lwm"/>
-                            <constraint firstItem="GbO-OS-Hr2" firstAttribute="top" secondItem="fof-mV-Glj" secondAttribute="top" type="default" id="kvl-vs-cA9"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Y3b-I1-qxZ"/>
                     <connections>
@@ -158,7 +138,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dO7-4O-bZd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="910" y="-467"/>
+            <point key="canvasLocation" x="940" y="-467"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="gts-eV-0cT">
@@ -182,37 +162,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="roach.png" width="150" height="280"/>
+        <image name="BackbackHD.png" width="268" height="500"/>
+        <image name="roachHD.png" width="203" height="400"/>
     </resources>
-    <classes>
-        <class className="BYBRoboRoachSettingsViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/BYBRoboRoachSettingsViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="stimImage" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="tableView" candidateClass="UITableView"/>
-            </relationships>
-        </class>
-        <class className="BYBRoboRoachViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/BYBRoboRoachViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="connectButtonClicked:"/>
-                <relationship kind="action" name="favoritesClicked:"/>
-                <relationship kind="action" name="handlePan:" candidateClass="UIPanGestureRecognizer"/>
-                <relationship kind="outlet" name="bookmarkBar" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="bookmarkButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="connectButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="goLeft" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="goRight" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="roachImage" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="spinner" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="stimulationSettings" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="stimulationSettingsButton" candidateClass="UIBarButtonItem"/>
-            </relationships>
-        </class>
-        <class className="NSLayoutConstraint" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

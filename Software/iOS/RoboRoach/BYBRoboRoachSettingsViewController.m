@@ -17,6 +17,7 @@
 
 
 @interface BYBRoboRoachSettingsViewController (){
+SCSliderCell *gainSlider;
 SCSliderCell *freqSlider;
 SCSliderCell *pulseWidthSlider;
 SCSliderCell *durationSlider;
@@ -43,17 +44,22 @@ SCTextFieldCell *hardwareCell;
     tableViewModel = [[SCTableViewModel alloc] initWithTableView:self->tableView] ;
     
     SCTableViewSection *stimulationSection = [SCTableViewSection sectionWithHeaderTitle:@"Stimulation Parameters"];
+    
     [tableViewModel addSection:stimulationSection];
     
-    randomCell = [SCSwitchCell cellWithText:@"Random Mode" boundObject:self.roboRoach boundPropertyName:@"randomMode"];
-    [stimulationSection addCell:randomCell];
-    
+    gainSlider = [SCSliderCell cellWithText:@"Gain" boundObject:self.roboRoach boundPropertyName:@"gain" ];
+    gainSlider.slider.minimumValue = 0;
+    gainSlider.slider.maximumValue = 255;
+    [stimulationSection addCell:gainSlider];
     
     durationSlider = [SCSliderCell cellWithText:@"Duration" boundObject:self.roboRoach boundPropertyName:@"duration"  ];
     durationSlider.slider.minimumValue = 10;
     durationSlider.slider.maximumValue = 1000;
     [stimulationSection addCell:durationSlider];
-
+    
+    randomCell = [SCSwitchCell cellWithText:@"Random Mode" boundObject:self.roboRoach boundPropertyName:@"randomMode"];
+    [stimulationSection addCell:randomCell];
+    
     
     freqSlider = [SCSliderCell cellWithText:@"Frequency" boundObject:self.roboRoach boundPropertyName:@"frequency"  ];
     freqSlider.slider.minimumValue = 1;
@@ -65,12 +71,18 @@ SCTextFieldCell *hardwareCell;
     pulseWidthSlider.slider.maximumValue = 200;
     [stimulationSection addCell:pulseWidthSlider];
     
-    SCTableViewSection *deviceSection = [SCTableViewSection sectionWithHeaderTitle:@"RoboRoach Device Information"];
-    [tableViewModel addSection:deviceSection];
     batterySlider = [SCSliderCell cellWithText:@"Battery Level" boundObject:self.roboRoach boundPropertyName:@"batteryLevel"  ];
     batterySlider.slider.minimumValue = 1;
     batterySlider.slider.maximumValue = 100;
     batterySlider.slider.enabled = NO;
+   
+    
+#if 0
+    [stimulationSection addCell:batterySlider];
+#else
+    SCTableViewSection *deviceSection = [SCTableViewSection sectionWithHeaderTitle:@"RoboRoach Device Information"];
+    [tableViewModel addSection:deviceSection];
+    
     [deviceSection addCell:batterySlider];
     
     firmwareCell = [SCTextFieldCell cellWithText:@"Firmware" boundObject:self.roboRoach boundPropertyName:@"firmwareVersion"];
@@ -81,12 +93,16 @@ SCTextFieldCell *hardwareCell;
     hardwareCell.textField.enabled = NO;
     [deviceSection addCell:hardwareCell];
 
+#endif
+    
     [self updateSettingConstraints ];
     [self redrawStimulation];
     
     durationSlider.slider.continuous = YES;
     freqSlider.slider.continuous = YES;
     pulseWidthSlider.slider.continuous = YES;
+    gainSlider.slider.continuous = YES;
+  
     
 }
 
@@ -121,6 +137,7 @@ SCTextFieldCell *hardwareCell;
     //NSLog(@"period: %f", period);
     
     float x = STIMLINE_OFFSET;
+    float gain = [self.roboRoach.gain floatValue]/255;
     
     for (int i = 0; i < [self.roboRoach.numberOfPulses intValue]; i++)
     {
@@ -134,11 +151,11 @@ SCTextFieldCell *hardwareCell;
         
         
         //Go Up
-        CGContextAddLineToPoint(context, x, STIMLINE_PEAK);
+        CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
         
         //Go Over
         x += pw*POINTS_TO_SEC;
-        CGContextAddLineToPoint(context, x, STIMLINE_PEAK);
+        CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
         
         //Go Down
         CGContextAddLineToPoint(context, x, STIMLINE_BASE);
@@ -198,7 +215,12 @@ SCTextFieldCell *hardwareCell;
         [freqSlider setEnabled:YES];
         [pulseWidthSlider setEnabled:YES];
         
-        self.roboRoach.numberOfPulses = [NSNumber numberWithDouble:[self.roboRoach.duration doubleValue] * [self.roboRoach.frequency doubleValue] / 1000];
+        self.roboRoach.numberOfPulses = [NSNumber numberWithDouble:[self.roboRoach.duration intValue] * [self.roboRoach.frequency intValue] / 1000];
+        
+        //Still a bug: The duration should round to closest value. On disconnect/connect... the values are different.
+        //durationSlider.slider.minimumValue = 1000/[self.roboRoach.frequency intValue];
+        //durationSlider.slider.maximumValue = 1000/[self.roboRoach.frequency intValue] * [self.roboRoach.numberOfPulses intValue];
+        
     }
 
     
@@ -215,8 +237,8 @@ SCTextFieldCell *hardwareCell;
     pulseWidthSlider.slider.maximumValue = 1000/[self.roboRoach.frequency doubleValue];
     
 
-    NSLog(@"pulseWidthSlider.slider.maximumValue: %f", pulseWidthSlider.slider.maximumValue);
-    NSLog(@"Num Pulses: %@", self.roboRoach.numberOfPulses);
+    //NSLog(@"pulseWidthSlider.slider.maximumValue: %f", pulseWidthSlider.slider.maximumValue);
+    //NSLog(@"Num Pulses: %@", self.roboRoach.numberOfPulses);
     
     [self redrawStimulation];
 

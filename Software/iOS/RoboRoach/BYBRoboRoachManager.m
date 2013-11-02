@@ -100,10 +100,14 @@ id <BYBRoboRoachManagerDelegate> delegate;
 
     data = self.activeRoboRoach.numberOfPulses.integerValue;
     [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_NUMPULSES_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
-
+    
     data = self.activeRoboRoach.randomMode.integerValue;
     [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
     
+    data = self.activeRoboRoach.gain.unsignedIntegerValue;
+    [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
+    
+
     //[TestFlight passCheckpoint:[NSString stringWithFormat:@"Updated RoboRoach: f=[%i] w=[%i] n=[%i] r=[%i]", self.activeRoboRoach.frequency.integerValue, self.activeRoboRoach.pulseWidth.integerValue, self.activeRoboRoach.numberOfPulses.integerValue,self.activeRoboRoach.randomMode.integerValue] ];
 
 
@@ -198,7 +202,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
         return;
     }
      NSLog(@"Writing [%i] characteristic %s on service %s", bdata, [self CBUUIDToString:cu], [self CBUUIDToString:su]);
-    [self.activeRoboRoach.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
+    [self.activeRoboRoach.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
 }
 
 -(void) notification:(int)serviceUUID characteristicUUID:(int)characteristicUUID on:(BOOL)on {
@@ -275,29 +279,32 @@ id <BYBRoboRoachManagerDelegate> delegate;
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     UInt16 characteristicUUID = [self CBUUIDToInt:characteristic.UUID];
-    NSLog(@"[peripheral] didUpdateValueForCharacteristic(%s, %i)", [self CBUUIDToString:characteristic.UUID], characteristicUUID);
     if (!error) {
         switch(characteristicUUID){
             case BYB_ROBOROACH_CHAR_FREQUENCY_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.frequency = [NSNumber numberWithInt:(int)value];
+                self.activeRoboRoach.frequency = [NSNumber numberWithUnsignedChar:(unsigned char)value];
+                NSLog(@"[peripheral] didUpdateValueForChar Freq (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
                 break;
             }
             case BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.pulseWidth = [NSNumber numberWithInt:(int)value];
+                self.activeRoboRoach.pulseWidth = [NSNumber numberWithUnsignedChar:(unsigned char)value];
+                NSLog(@"[peripheral] didUpdateValueForChar PW   (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
                 break;
             }
             case BYB_ROBOROACH_CHAR_NUMPULSES_UUID:
             {
                 char value;
                 [characteristic.value getBytes:&value length:1];
-                self.activeRoboRoach.numberOfPulses = [NSNumber numberWithInt:(int)value];
+                self.activeRoboRoach.numberOfPulses = [NSNumber numberWithUnsignedChar:(unsigned char)value];
                 self.activeRoboRoach.duration = @([self.activeRoboRoach.numberOfPulses floatValue] / [self.activeRoboRoach.frequency floatValue] * 1000);
+                NSLog(@"[peripheral] didUpdateValueForChar NumP (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
+                NSLog(@"[peripheral]         Recalculating Dura (%@)", self.activeRoboRoach.duration);
                 break;
             }
             case BYB_ROBOROACH_CHAR_RANDOMMODE_UUID:
@@ -305,7 +312,17 @@ id <BYBRoboRoachManagerDelegate> delegate;
                 char value;
                 [characteristic.value getBytes:&value length:1];
                 self.activeRoboRoach.randomMode = [NSNumber numberWithBool:(bool)value];
+                //[[self delegate] didFinsihReadingRoboRoachValues];
+                NSLog(@"[peripheral] didUpdateValueForChar Rand (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithInt:(int)value]);
+                break;
+            }
+            case BYB_ROBOROACH_CHAR_GAIN_UUID:
+            {
+                char value;
+                [characteristic.value getBytes:&value length:1];
+                self.activeRoboRoach.gain = [NSNumber numberWithUnsignedChar:(unsigned char)value];
                 [[self delegate] didFinsihReadingRoboRoachValues];
+                NSLog(@"[peripheral] didUpdateValueForChar Gain (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
                 break;
             }
             case BATTERY_CHAR_BATTERYLEVEL_UUID:
@@ -371,6 +388,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_PULSEWIDTH_UUID];
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_NUMPULSES_UUID];
                     [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_RANDOMMODE_UUID];
+                    [self readValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID];
                     [self readValue:BATTERY_SERVICE_UUID characteristicUUID:
                         BATTERY_CHAR_BATTERYLEVEL_UUID];
                     [self readValue:DEVICE_INFO_SERVICE_UUID characteristicUUID:

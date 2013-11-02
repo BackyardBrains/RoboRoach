@@ -15,7 +15,7 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations" //I hate compiler warnings.
-    [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+    //[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
     [TestFlight takeOff:@"07566dd0-7f87-4243-bdd5-9fe7a05ac29e"];
 #pragma clang diagnostic pop
     

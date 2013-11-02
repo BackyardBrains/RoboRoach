@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #import "TestFlight.h"
 
-#define ROBOROACH_TURN_TIMEOUT 1
+#define ROBOROACH_TURN_TIMEOUT 0.4
 
 typedef enum {
     moveLeft=1,
@@ -21,6 +21,7 @@ typedef enum {
 
 @property (nonatomic, copy) NSNumber *randomMode;
 @property (nonatomic, copy) NSNumber *frequency;
+@property (nonatomic, copy) NSNumber *gain;
 @property (nonatomic, copy) NSNumber *pulseWidth;
 @property (nonatomic, copy) NSNumber *numberOfPulses;
 @property (nonatomic, copy) NSNumber *duration;
