@@ -106,10 +106,6 @@ id <BYBRoboRoachManagerDelegate> delegate;
     
     data = self.activeRoboRoach.gain.unsignedIntegerValue;
     [self writeValue:BYB_ROBOROACH_SERVICE_UUID characteristicUUID:BYB_ROBOROACH_CHAR_GAIN_UUID data:[NSData dataWithBytes: &data length: sizeof(data)]];
-    
-
-    //[TestFlight passCheckpoint:[NSString stringWithFormat:@"Updated RoboRoach: f=[%i] w=[%i] n=[%i] r=[%i]", self.activeRoboRoach.frequency.integerValue, self.activeRoboRoach.pulseWidth.integerValue, self.activeRoboRoach.numberOfPulses.integerValue,self.activeRoboRoach.randomMode.integerValue] ];
-
 
 }
 
@@ -165,13 +161,13 @@ id <BYBRoboRoachManagerDelegate> delegate;
     CBUUID *cu = [CBUUID UUIDWithData:cd];
     CBService *service = [self findServiceFromUUID:su p:self.activeRoboRoach.peripheral];
     if (!service) {
-        printf("Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
+        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
         return;
     }
     CBCharacteristic *characteristic = [self findCharacteristicFromUUID:cu service:service];
     
     if (!characteristic) {
-        printf("Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
+        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
         return;
     }
     
@@ -193,12 +189,12 @@ id <BYBRoboRoachManagerDelegate> delegate;
     CBUUID *cu = [CBUUID UUIDWithData:cd];
     CBService *service = [self findServiceFromUUID:su p:self.activeRoboRoach.peripheral];
     if (!service) {
-        printf("Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
+        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
         return;
     }
     CBCharacteristic *characteristic = [self findCharacteristicFromUUID:cu service:service];
     if (!characteristic) {
-        printf("Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
+        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
         return;
     }
      NSLog(@"Writing [%i] characteristic %s on service %s", bdata, [self CBUUIDToString:cu], [self CBUUIDToString:su]);
@@ -215,12 +211,12 @@ id <BYBRoboRoachManagerDelegate> delegate;
     CBUUID *cu = [CBUUID UUIDWithData:cd];
     CBService *service = [self findServiceFromUUID:su p:self.activeRoboRoach.peripheral];
     if (!service) {
-        printf("Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
+        NSLog(@"Could not find service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
         return;
     }
     CBCharacteristic *characteristic = [self findCharacteristicFromUUID:cu service:service];
     if (!characteristic) {
-        printf("Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
+        NSLog(@"Could not find characteristic with UUID %s on service with UUID %s on peripheral with UUID %s\r\n",[self CBUUIDToString:cu],[self CBUUIDToString:su],[self UUIDToString:self.activeRoboRoach.peripheral.UUID]);
         return;
     }
     [self.activeRoboRoach.peripheral setNotifyValue:on forCharacteristic:characteristic];
@@ -242,7 +238,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
 }
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
-    printf("[CM] didUpdateState Changed %d (%s)\r\n",central.state,[self centralManagerStateToString:central.state]);
+    NSLog(@"[CM] didUpdateState Changed %d (%s)\r\n",central.state,[self centralManagerStateToString:central.state]);
 
 }
 
@@ -352,18 +348,18 @@ id <BYBRoboRoachManagerDelegate> delegate;
         }
     }
     else {
-        printf("updateValueForCharacteristic failed !");
+        NSLog(@"updateValueForCharacteristic failed !");
     }
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error {
     NSLog(@"[peripheral] didDiscoverServices()");
     if (!error) {
-        printf("Services of peripheral with UUID : %s found\r\n",[self UUIDToString:peripheral.UUID]);
+        NSLog(@"Services of peripheral with UUID : %s found\r\n",[self UUIDToString:peripheral.UUID]);
         [self getAllCharacteristicsFromRoboRoach:peripheral];
     }
     else {
-        printf("Service discovery was unsuccessfull !\r\n");
+        NSLog(@"Service discovery was unsuccessfull !\r\n");
     }
 }
 
@@ -375,7 +371,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
             NSLog(@"[peripheral] Found characteristic %s",[ self CBUUIDToString:c.UUID]);
             CBService *s = [peripheral.services objectAtIndex:(peripheral.services.count - 1)];
             if([self compareCBUUID:service.UUID UUID2:s.UUID]) {
-                //printf("Finished discovering characteristics");
+                //NSLog(@"Finished discovering characteristics");
                 //[[self delegate] keyfobReady];
                 NSLog(@"Finished discovering characteristics");
                 
@@ -423,9 +419,10 @@ id <BYBRoboRoachManagerDelegate> delegate;
 
 -(const char *) UUIDToString:(CFUUIDRef)UUID {
     if (!UUID) return "NULL";
-    CFStringRef s = CFUUIDCreateString(NULL, UUID);
-    return CFStringGetCStringPtr(s, 0);
-    
+    NSLog(@"UUID To String Enter");
+    //CFStringRef s = CFUUIDCreateString(NULL, UUID);
+    //return CFStringGetCStringPtr(s, 0);
+    return "NULL";
 }
 
 -(int) compareCBUUID:(CBUUID *) UUID1 UUID2:(CBUUID *)UUID2 {
@@ -488,14 +485,14 @@ id <BYBRoboRoachManagerDelegate> delegate;
 }
 
 - (void) printPeripheralInfo:(CBPeripheral*)peripheral {
-    CFStringRef s = CFUUIDCreateString(NULL, peripheral.UUID);
-    printf("------------------------------------\n");
-    printf("Peripheral Info :\r\n");
-    printf("UUID : %s\n",CFStringGetCStringPtr(s, 0));
-    printf("RSSI : %d\n",[peripheral.RSSI intValue]);
-    printf("Name : %s\n",[peripheral.name UTF8String]);
-    printf("isConnected : %d\n",peripheral.isConnected);
-    printf("-------------------------------------\n");
+    //CFStringRef s = CFUUIDCreateString(NULL, peripheral.UUID);
+    NSLog(@"------------------------------------\n");
+    NSLog(@"Peripheral Info :\r\n");
+    //NSLog(@"UUID : %s\n",CFStringGetCStringPtr(s, 0));
+    NSLog(@"RSSI : %d\n",[peripheral.RSSI intValue]);
+    NSLog(@"Name : %s\n",[peripheral.name UTF8String]);
+    NSLog(@"isConnected : %d\n",peripheral.isConnected);
+    NSLog(@"-------------------------------------\n");
     
 }
 
@@ -509,7 +506,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
         //[GJG to Fix] CFUUIDCreateString crashes on new RoboRoaches.???
         
         //CFStringRef s = CFUUIDCreateString(NULL, p.UUID);
-        //printf("%d  |  %s\n",i,CFStringGetCStringPtr(s, 0));
+        //NSLog(@"%d  |  %s\n",i,CFStringGetCStringPtr(s, 0));
         //[self printPeripheralInfo:p];
     }
 }

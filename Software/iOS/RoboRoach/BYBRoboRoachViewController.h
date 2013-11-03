@@ -10,7 +10,10 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <CoreBluetooth/CBService.h>
 #import "BYBRoboRoachManager.h"
+
+#ifdef TESTFLIGHT
 #import "TestFlight.h"
+#endif
 
 @interface BYBRoboRoachViewController : UIViewController <BYBRoboRoachManagerDelegate, BYBRoboRoachDelegate>
 

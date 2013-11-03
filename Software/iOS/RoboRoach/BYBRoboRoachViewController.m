@@ -252,7 +252,6 @@ BOOL isConnected = NO;
 
 
 - (void) didConnectToRoboRoach: (BOOL)success{
-    //[TestFlight passCheckpoint:@"Connected to RoboRoach"];
     NSLog(@"didConnectToRoboRoach:success[%i]",success);
     rr.activeRoboRoach.delegate = self;
     [stimulationSettingsButton setEnabled:YES];

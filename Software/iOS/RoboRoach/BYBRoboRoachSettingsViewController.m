@@ -96,6 +96,7 @@ SCTextFieldCell *hardwareCell;
 
 #endif
     
+    
     [self updateSettingConstraints ];
     [self redrawStimulation];
     
@@ -210,7 +211,7 @@ SCTextFieldCell *hardwareCell;
     float roundedGain = round([self.roboRoach.gain floatValue]/ 5.0f) * 5.0f;
     self.roboRoach.gain = [NSNumber numberWithFloat:roundedGain];
     
-    float roundedDuration = round([self.roboRoach.duration floatValue]/ 5.0f) * 5.0f;
+    float roundedDuration = round([self.roboRoach.duration floatValue]/ 10.0f) * 10.0f;
     self.roboRoach.duration = [NSNumber numberWithFloat:roundedDuration];
     
     
@@ -263,12 +264,31 @@ valueChangedForRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 
+- (void) tableViewModel:(SCTableViewModel *)tableViewModel
+scrollViewDidScroll:(UIScrollView*)scrollView
+{
+        return;
+}
+
 -(void) viewWillDisappear:(BOOL)animated {
     
+    //Fix a bug with SCTableView calling scroll event on zombie object.
+    tableViewModel.delegate = nil;
+    
     if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
+       
+        //Fix a bug with SCTableView calling scroll event on zombie object.
+        //[tableViewModel tableView].scrollEnabled = NO;
+        //[[tableViewModel tab] setContentOffset:CGPointZero animated:YES];
+
+        //tableViewModel.delegate = nil;
+        
+    
+        
         
         NSLog(@"Save settings back to the RoboRoach!");
         [self.roboRoach updateSettings];
+        
         
     }
     [super viewWillDisappear:animated];
