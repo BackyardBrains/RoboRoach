@@ -10,6 +10,13 @@
 		6F089475174EDEA600AF3D7F /* Comic_Book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F089474174ED8E500AF3D7F /* Comic_Book.ttf */; };
 		6F280B08173307DA00BDBDF8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F280B07173307DA00BDBDF8 /* libz.dylib */; };
 		6F5BCAD918255B5400B77AFE /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5BCAD618255B5400B77AFE /* libTestFlight.a */; };
+		6F5FE05D1826B96800FA8647 /* SensibleTableView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5FE05C1826B96800FA8647 /* SensibleTableView.framework */; };
+		6F5FE06418273FBC00FA8647 /* battery-0.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE05E18273FBC00FA8647 /* battery-0.png */; };
+		6F5FE06518273FBC00FA8647 /* battery-25.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE05F18273FBC00FA8647 /* battery-25.png */; };
+		6F5FE06618273FBC00FA8647 /* battery-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE06018273FBC00FA8647 /* battery-50.png */; };
+		6F5FE06718273FBC00FA8647 /* battery-80.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE06118273FBC00FA8647 /* battery-80.png */; };
+		6F5FE06818273FBC00FA8647 /* battery-90.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE06218273FBC00FA8647 /* battery-90.png */; };
+		6F5FE06918273FBC00FA8647 /* battery-95.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE06318273FBC00FA8647 /* battery-95.png */; };
 		6F6A118A174DA127004465B5 /* ChartBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F6A1183174DA127004465B5 /* ChartBG.png */; };
 		6F6A118B174DA127004465B5 /* ChartBG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F6A1184174DA127004465B5 /* ChartBG@2x.png */; };
 		6F7A9EFA171A1732004B1575 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F7A9EF9171A1732004B1575 /* Foundation.framework */; };
@@ -43,6 +50,13 @@
 		6F280B07173307DA00BDBDF8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		6F5BCAD618255B5400B77AFE /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		6F5BCAD718255B5400B77AFE /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		6F5FE05C1826B96800FA8647 /* SensibleTableView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SensibleTableView.framework; path = "Static Frameworks/SensibleTableView.framework"; sourceTree = "<group>"; };
+		6F5FE05E18273FBC00FA8647 /* battery-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-0.png"; sourceTree = "<group>"; };
+		6F5FE05F18273FBC00FA8647 /* battery-25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-25.png"; sourceTree = "<group>"; };
+		6F5FE06018273FBC00FA8647 /* battery-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-50.png"; sourceTree = "<group>"; };
+		6F5FE06118273FBC00FA8647 /* battery-80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-80.png"; sourceTree = "<group>"; };
+		6F5FE06218273FBC00FA8647 /* battery-90.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-90.png"; sourceTree = "<group>"; };
+		6F5FE06318273FBC00FA8647 /* battery-95.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-95.png"; sourceTree = "<group>"; };
 		6F6A1183174DA127004465B5 /* ChartBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ChartBG.png; sourceTree = "<group>"; };
 		6F6A1184174DA127004465B5 /* ChartBG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ChartBG@2x.png"; sourceTree = "<group>"; };
 		6F7A9EF4171A1732004B1575 /* RoboRoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoboRoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +99,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6F280B08173307DA00BDBDF8 /* libz.dylib in Frameworks */,
+				6F5FE05D1826B96800FA8647 /* SensibleTableView.framework in Frameworks */,
 				6F5BCAD918255B5400B77AFE /* libTestFlight.a in Frameworks */,
 				6F7A9F2E171A5CD3004B1575 /* CoreBluetooth.framework in Frameworks */,
 				6F7A9EFA171A1732004B1575 /* Foundation.framework in Frameworks */,
@@ -126,6 +141,7 @@
 		6F7A9EF6171A1732004B1575 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6F5FE05C1826B96800FA8647 /* SensibleTableView.framework */,
 				6F5BCAD518255B5400B77AFE /* TestFlight */,
 				6F280B07173307DA00BDBDF8 /* libz.dylib */,
 				6FBAF5661724428F00C8E3D1 /* UIKit.framework */,
@@ -162,6 +178,12 @@
 		6F938D331720D1950084E06A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6F5FE05E18273FBC00FA8647 /* battery-0.png */,
+				6F5FE05F18273FBC00FA8647 /* battery-25.png */,
+				6F5FE06018273FBC00FA8647 /* battery-50.png */,
+				6F5FE06118273FBC00FA8647 /* battery-80.png */,
+				6F5FE06218273FBC00FA8647 /* battery-90.png */,
+				6F5FE06318273FBC00FA8647 /* battery-95.png */,
 				6FCADC341825DF2000C654B6 /* AppIcon29x29.png */,
 				6FCADC351825DF2000C654B6 /* AppIcon29x29@2x.png */,
 				6FCADC361825DF2000C654B6 /* AppIcon40x40.png */,
@@ -246,20 +268,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F5FE06818273FBC00FA8647 /* battery-90.png in Resources */,
 				6F089475174EDEA600AF3D7F /* Comic_Book.ttf in Resources */,
 				6FCADC1F1825DD7000C654B6 /* Icon@2x.png in Resources */,
+				6F5FE06618273FBC00FA8647 /* battery-50.png in Resources */,
 				6FCADC3D1825DF2000C654B6 /* AppIcon60x60@2x.png in Resources */,
 				6F86CCBA17EFC83600C5CC07 /* Default-568h@2x~iphone.png in Resources */,
 				6F6A118A174DA127004465B5 /* ChartBG.png in Resources */,
+				6F5FE06718273FBC00FA8647 /* battery-80.png in Resources */,
 				6F6A118B174DA127004465B5 /* ChartBG@2x.png in Resources */,
 				6FFDD11B174EC03A001CDD9C /* BYBRoboRoach_iPhone.storyboard in Resources */,
 				6F86CCBB17EFC83600C5CC07 /* Default@2x~iphone.png in Resources */,
 				6FCADC3B1825DF2000C654B6 /* AppIcon40x40.png in Resources */,
+				6F5FE06918273FBC00FA8647 /* battery-95.png in Resources */,
 				6F86CCBC17EFC83600C5CC07 /* Default~iphone.png in Resources */,
 				6FC6B0F318235AAF001E798D /* roachHD.png in Resources */,
 				6FCADC3C1825DF2000C654B6 /* AppIcon40x40@2x.png in Resources */,
 				6FCADC1E1825DD7000C654B6 /* Icon.png in Resources */,
+				6F5FE06518273FBC00FA8647 /* battery-25.png in Resources */,
 				6FCADC3A1825DF2000C654B6 /* AppIcon29x29@2x.png in Resources */,
+				6F5FE06418273FBC00FA8647 /* battery-0.png in Resources */,
 				6FC6B0F11823471C001E798D /* LED-Left.png in Resources */,
 				6FCADC391825DF2000C654B6 /* AppIcon29x29.png in Resources */,
 				6FC6B0ED1823408F001E798D /* BackbackHD.png in Resources */,
@@ -337,7 +365,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C552B58F-0210-4D57-8589-538E404BB228";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7CA3C4FB-D3A1-49F2-9BFD-CB65E77FCD89";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -351,7 +379,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/Static\\ Frameworks\\",
+					"$(SRCROOT)/Static\\\\\\ Frameworks\\\\",
+					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks",
 				);
 				"FRAMEWORK_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
@@ -381,7 +410,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/Static\\ Frameworks",
+					"$(SRCROOT)/Static\\\\\\ Frameworks",
+					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks",
 				);
 				"FRAMEWORK_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
@@ -399,7 +429,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C552B58F-0210-4D57-8589-538E404BB228";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9DF592A3-0175-4311-9BA6-31E9A6B65AC7";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

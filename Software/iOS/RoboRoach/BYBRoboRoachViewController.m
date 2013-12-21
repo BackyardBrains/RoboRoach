@@ -21,6 +21,8 @@
     __weak IBOutlet UILabel *goLeft;
     IBOutlet UIImageView *roachImage;
     IBOutlet UIImageView *backpackImage;
+    IBOutlet UIImageView *batteryImage;
+    
     __weak IBOutlet UILabel *stimulationSettings;
     
     IBOutlet UIButton * connectButton;
@@ -54,6 +56,7 @@ BOOL isConnected = NO;
     
     [roachImage setHidden:NO];
     [backpackImage setHidden:YES];
+    [batteryImage setHidden:YES];
     [goLeft setHidden:YES];
     [goRight setHidden:YES];
     [spinner setHidden:YES];
@@ -145,6 +148,28 @@ BOOL isConnected = NO;
     [stimulationSettings setText:[rr.activeRoboRoach getStimulationString]];
     [stimulationSettings setHidden:NO];
     
+    [batteryImage setAlpha:1];
+    
+    if ([rr.activeRoboRoach.batteryLevel integerValue] > 90)
+    {
+        batteryImage.image = [UIImage imageNamed: @"battery-95.png"];
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 80)
+    {
+        batteryImage.image = [UIImage imageNamed: @"battery-90.png"];
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 70)
+    {
+        batteryImage.image = [UIImage imageNamed: @"battery-80.png"];
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 60)
+    {
+        batteryImage.image = [UIImage imageNamed: @"battery-50.png"];
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 50)
+    {
+        batteryImage.image = [UIImage imageNamed: @"battery-25.png"];
+    }else{
+        batteryImage.image = [UIImage imageNamed: @"battery-0.png"];
+    }
+
+    
 }
 
 
@@ -156,7 +181,9 @@ BOOL isConnected = NO;
     
     if (foundRoboRoaches.count > 0 ){
         [backpackImage setAlpha:0.25];
-        [backpackImage setHidden:false];
+        [backpackImage setHidden:NO];
+        [batteryImage setAlpha:0.25];
+        [batteryImage setHidden:NO];
         
         [connectButton setTitle:@"Connecting..." forState: UIControlStateDisabled];
         [connectButton setEnabled:NO];
@@ -183,6 +210,7 @@ BOOL isConnected = NO;
     [bookmarkBar setHidden:YES];
     
     [backpackImage setHidden:YES];
+    [batteryImage setHidden:YES];
     [stimulationSettings setHidden:YES];
     
     [connectButton setEnabled:YES];
@@ -203,7 +231,6 @@ BOOL isConnected = NO;
     [bookmarkButton setEnabled:YES];
     [stimulationSettingsButton setEnabled:YES];
     [backpackImage setAlpha:1];
-
     
     
     //[connectButtonBar setTitle:@"Disconnect"];

@@ -316,7 +316,6 @@ id <BYBRoboRoachManagerDelegate> delegate;
                 char value;
                 [characteristic.value getBytes:&value length:1];
                 self.activeRoboRoach.gain = [NSNumber numberWithUnsignedChar:(unsigned char)value];
-                [[self delegate] didFinsihReadingRoboRoachValues];
                 NSLog(@"[peripheral] didUpdateValueForChar Gain (%s, %@)", [self CBUUIDToString:characteristic.UUID], [NSNumber numberWithUnsignedChar:(unsigned char)value]);
                 break;
             }
@@ -341,6 +340,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
                 [characteristic.value getBytes:&value length:10];
                 self.activeRoboRoach.hardwareVersion = [NSString
                     stringWithUTF8String:&value];
+                [[self delegate] didFinsihReadingRoboRoachValues];
                 break;
             }
                 

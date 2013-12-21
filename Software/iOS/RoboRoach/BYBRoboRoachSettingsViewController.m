@@ -42,6 +42,8 @@ SCTextFieldCell *hardwareCell;
     
 
     tableViewModel = [[SCTableViewModel alloc] initWithTableView:self->tableView] ;
+    tableViewModel.tableView.scrollEnabled = NO;
+    //tableViewModel.tableView.scrollsToTop = YES;
     
     SCTableViewSection *stimulationSection = [SCTableViewSection sectionWithHeaderTitle:@"Stimulation Parameters"];
     
@@ -71,6 +73,8 @@ SCTextFieldCell *hardwareCell;
     pulseWidthSlider.slider.minimumValue = 1;
     pulseWidthSlider.slider.maximumValue = 200;
     [stimulationSection addCell:pulseWidthSlider];
+
+#if 0
     
     batterySlider = [SCSliderCell cellWithText:@"Battery Level" boundObject:self.roboRoach boundPropertyName:@"batteryLevel"  ];
     batterySlider.slider.minimumValue = 1;
@@ -78,9 +82,9 @@ SCTextFieldCell *hardwareCell;
     batterySlider.slider.enabled = NO;
    
     
-#if 0
-    [stimulationSection addCell:batterySlider];
-#else
+    //#if 0
+    //[stimulationSection addCell:batterySlider];
+    //#else
     SCTableViewSection *deviceSection = [SCTableViewSection sectionWithHeaderTitle:@"RoboRoach Device Information"];
     [tableViewModel addSection:deviceSection];
     
@@ -105,6 +109,7 @@ SCTextFieldCell *hardwareCell;
     pulseWidthSlider.slider.continuous = YES;
     gainSlider.slider.continuous = YES;
   
+    //[[tableViewModel tableView] setContentOffset:CGPointZero animated:YES];
     
 }
 
@@ -270,10 +275,18 @@ scrollViewDidScroll:(UIScrollView*)scrollView
         return;
 }
 
+
+- (void) tableViewModel:(SCTableViewModel *)tableViewModel
+    scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+    [scrollView setContentOffset:scrollView.contentOffset animated:YES];
+}
+
+
 -(void) viewWillDisappear:(BOOL)animated {
     
     //Fix a bug with SCTableView calling scroll event on zombie object.
-    tableViewModel.delegate = nil;
+    //tableViewModel.delegate = nil;
     
     if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
        
