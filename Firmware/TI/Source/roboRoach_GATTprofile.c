@@ -31,7 +31,7 @@
  * CONSTANTS
  */
 
-#define SERVAPP_NUM_ATTR_SUPPORTED      23  // 17
+#define SERVAPP_NUM_ATTR_SUPPORTED      40  
 
 /*********************************************************************
  * TYPEDEFS
@@ -65,10 +65,10 @@ CONST uint8 rrCharPulseWidthUUID[ATT_BT_UUID_SIZE] =
   LO_UINT16(ROBOROACH_CHAR_PULSE_WIDTH_UUID), HI_UINT16(ROBOROACH_CHAR_PULSE_WIDTH_UUID)
 };
 
-// Number Of Stimulation Pulses Characteristic UUID: 0xB2B3
-CONST uint8 rrCharNumberOfPulsesUUID[ATT_BT_UUID_SIZE] =
+// Duration of Stimulation in 5ms Increments Characteristic UUID: 0xB2B3
+CONST uint8 rrCharDurationIn5msIncrementsUUID[ATT_BT_UUID_SIZE] =
 { 
-  LO_UINT16(ROBOROACH_CHAR_NUM_PULSES_UUID), HI_UINT16(ROBOROACH_CHAR_NUM_PULSES_UUID)
+  LO_UINT16(ROBOROACH_CHAR_DURATION_IN_5MS_UUID), HI_UINT16(ROBOROACH_CHAR_DURATION_IN_5MS_UUID)
 };
 
 // Random Mode Characteristic UUID: 0xB2B4
@@ -88,6 +88,49 @@ CONST uint8 rrCharStimulateRightUUID[ATT_BT_UUID_SIZE] =
 { 
   LO_UINT16(ROBOROACH_CHAR_STIMULATE_RIGHT_UUID), HI_UINT16(ROBOROACH_CHAR_STIMULATE_RIGHT_UUID)
 };
+
+// Stimulation Gain Characteristic UUID: 0xB2B7
+CONST uint8 rrCharGainUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_GAIN_UUID), HI_UINT16(ROBOROACH_CHAR_GAIN_UUID)
+};
+
+// Stimulation Random Mode Frequency Minimum Characteristic UUID: 0xB2B8
+CONST uint8 rrCharFreqMinUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_FREQ_MIN_UUID), HI_UINT16(ROBOROACH_CHAR_FREQ_MIN_UUID)
+};
+
+// Stimulation Random Mode Frequency Maximum Characteristic UUID: 0xB2B9
+CONST uint8 rrCharFreqMaxUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_FREQ_MAX_UUID), HI_UINT16(ROBOROACH_CHAR_FREQ_MAX_UUID)
+};
+
+// Stimulation Random Mode Pulse Width Minimum Characteristic UUID: 0xB2BA
+CONST uint8 rrCharPWminUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_PW_MIN_UUID), HI_UINT16(ROBOROACH_CHAR_PW_MIN_UUID)
+};
+
+// Stimulation Random Mode Pulse Width Maximum Characteristic UUID: 0xB2BB
+CONST uint8 rrCharPWmaxUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_PW_MAX_UUID), HI_UINT16(ROBOROACH_CHAR_PW_MAX_UUID)
+};
+
+// Stimulation Random Mode Gain Minimum Characteristic UUID: 0xB2BC
+CONST uint8 rrCharGainMinUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_GAIN_MIN_UUID), HI_UINT16(ROBOROACH_CHAR_GAIN_MIN_UUID)
+};
+ 
+// Stimulation Random Mode Gain Maximum Characteristic UUID: 0xB2BD
+CONST uint8 rrCharGainMaxUUID[ATT_BT_UUID_SIZE] =
+{ 
+  LO_UINT16(ROBOROACH_CHAR_GAIN_MAX_UUID), HI_UINT16(ROBOROACH_CHAR_GAIN_MAX_UUID)
+};
+
 
 /*********************************************************************
  * EXTERNAL VARIABLES
@@ -112,18 +155,23 @@ static CONST gattAttrType_t roboRoachService = { ATT_BT_UUID_SIZE, roboRoachServ
 
 // Stimulation Frequency Characteristic Properties
 static uint8 rrCharFrequencyProps = GATT_PROP_READ | GATT_PROP_WRITE;
-static uint8 rrCharFrequency = 55; //Default: 55Hz
+static uint8 rrCharFrequency = 55; //Default: 55Hz    [wjr]: when i change this the default does not... what does it affect???
 static uint8 rrCharFrequencyUserDesp[22] = "Stimulation Frequency\0";
+
+// Stimulation Gain Characteristic Properties
+static uint8 rrCharGainProps = GATT_PROP_READ | GATT_PROP_WRITE;
+static uint8 rrCharGain = 50; //Default: 50%
+static uint8 rrCharGainUserDesp[17] = "Stimulation Gain\0";
 
 // Pulse Width Characteristic Properties
 static uint8 rrCharPulseWidthProps = GATT_PROP_READ | GATT_PROP_WRITE;
 static uint8 rrCharPulseWidth = 5; //Default: 5ms
 static uint8 rrCharPulseWidthUserDesp[29] = "Stimulation Pulse Width (ms)\0";
 
-// Number of Pulses Characteristic Properties
-static uint8 rrCharNumPulsesProps =  GATT_PROP_READ | GATT_PROP_WRITE;
-static uint8 rrCharNumPulses = 10; //Default: 10 Pulses
-static uint8 rrCharNumPulsesUserDesp[17] = "Number of Pulses\0";
+// Duration of Stimulus Characteristic Properties
+static uint8 rrCharDurationIn5msIncrementsProps =  GATT_PROP_READ | GATT_PROP_WRITE;
+static uint8 rrCharDurationIn5msIncrements = 100; //Default: 100 * 5ms = 500ms default
+static uint8 rrCharDurationIn5msIncrementsUserDesp[24] = "Duration (in 5ms units)\0";
 
 // Random Mode Characteristic Properties
 static uint8 rrCharRandomModeProps =  GATT_PROP_READ | GATT_PROP_WRITE;
@@ -139,6 +187,36 @@ static uint8 rrCharStimulateLeftUserDesp[15] = "Stimulate Left\0";
 static uint8 rrCharStimulateRightProps = GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
 static uint8 rrCharStimulateRight = 0;
 static uint8 rrCharStimulateRightUserDesp[16] = "Stimulate Right\0";
+
+// Random Mode Freq Minimum Characteristic Properties
+static uint8 rrCharFreqMinProps = GATT_PROP_READ | GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
+static uint8 rrCharFreqMin = 40;  //Default: 40 Hz
+static uint8 rrCharFreqMinUserDesp[18] = "Minimum Frequency\0";
+
+// Random Mode Freq Maxmimum Characteristic Properties
+static uint8 rrCharFreqMaxProps = GATT_PROP_READ | GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
+static uint8 rrCharFreqMax = 100;  //Default: 100 Hz
+static uint8 rrCharFreqMaxUserDesp[18] = "Maximum Frequency\0";
+
+// Random Mode Pulse Width Minimum Characteristic Properties
+static uint8 rrCharPWminProps = GATT_PROP_READ | GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
+static uint8 rrCharPWmin = 1;  //Default: 1 ms
+static uint8 rrCharPWminUserDesp[25] = "Minimum Pulse Width (ms)\0";
+
+// Random Mode Pulse Width Maxmimum Characteristic Properties
+static uint8 rrCharPWmaxProps = GATT_PROP_READ | GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
+static uint8 rrCharPWmax = 9;  //Default: 9 ms
+static uint8 rrCharPWmaxUserDesp[25] = "Maximum Pulse Width (ms)\0";
+
+// Random Mode Gain Minimum Characteristic Properties
+static uint8 rrCharGainMinProps = GATT_PROP_READ | GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
+static uint8 rrCharGainMin = 50;  //Default: 50%
+static uint8 rrCharGainMinUserDesp[13] = "Minimum Gain\0";
+
+// Random Mode Gain Maxmimum Characteristic Properties
+static uint8 rrCharGainMaxProps = GATT_PROP_READ | GATT_PROP_WRITE; //GATT_PROP_NOTIFY;
+static uint8 rrCharGainMax = 50;  //Default: 50%
+static uint8 rrCharGainMaxUserDesp[13] = "Maximum Gain\0";
 
 
 /*********************************************************************
@@ -165,10 +243,10 @@ static gattAttribute_t roboRoachAttrTbl[SERVAPP_NUM_ATTR_SUPPORTED] =
     {{ ATT_BT_UUID_SIZE, rrCharPulseWidthUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharPulseWidth},
     {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ,0,rrCharPulseWidthUserDesp},           
       
-    // Number of Pulses Characteristic Declaration
-    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharNumPulsesProps },
-    {{ ATT_BT_UUID_SIZE, rrCharNumberOfPulsesUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharNumPulses },
-    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharNumPulsesUserDesp },
+    // Duration In 5ms Increments Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharDurationIn5msIncrementsProps },
+    {{ ATT_BT_UUID_SIZE, rrCharDurationIn5msIncrementsUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharDurationIn5msIncrements },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharDurationIn5msIncrementsUserDesp },
 
     // Random Mode Characteristic Declaration
     {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharRandomModeProps },
@@ -183,8 +261,43 @@ static gattAttribute_t roboRoachAttrTbl[SERVAPP_NUM_ATTR_SUPPORTED] =
     // Stimulate Right Characteristic Declaration
     {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharStimulateRightProps },
     {{ ATT_BT_UUID_SIZE, rrCharStimulateRightUUID }, GATT_PERMIT_WRITE, 0, &rrCharStimulateRight },
-    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharStimulateRightUserDesp }
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharStimulateRightUserDesp },
    
+    // Gain Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharGainProps },
+    {{ ATT_BT_UUID_SIZE, rrCharGainUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharGain },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharGainUserDesp },    
+
+    // Random Mode Frequency Minimum Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharFreqMinProps },
+    {{ ATT_BT_UUID_SIZE, rrCharFreqMinUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharFreqMin },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharFreqMinUserDesp },
+
+    // Random Mode Frequency Maximum Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharFreqMaxProps },
+    {{ ATT_BT_UUID_SIZE, rrCharFreqMaxUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharFreqMax },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharFreqMaxUserDesp }, 
+
+    // Random Mode Pulse Width Minimum Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharPWminProps },
+    {{ ATT_BT_UUID_SIZE, rrCharPWminUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharPWmin },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharPWminUserDesp }, 
+
+    // Random Mode Pulse Width Maximum Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharPWmaxProps },
+    {{ ATT_BT_UUID_SIZE, rrCharPWmaxUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharPWmax },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharPWmaxUserDesp }, 
+
+    // Random Mode Gain Minimum Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharGainMinProps },
+    {{ ATT_BT_UUID_SIZE, rrCharGainMinUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharGainMin },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharGainMinUserDesp }, 
+
+    // Random Mode Gain Maximum Characteristic Declaration
+    {{ ATT_BT_UUID_SIZE, characterUUID }, GATT_PERMIT_READ, 0, &rrCharGainMaxProps },
+    {{ ATT_BT_UUID_SIZE, rrCharGainMaxUUID }, GATT_PERMIT_READ | GATT_PERMIT_WRITE, 0, &rrCharGainMax },
+    {{ ATT_BT_UUID_SIZE, charUserDescUUID }, GATT_PERMIT_READ, 0, rrCharGainMaxUserDesp }, 
+    
 };
 
 
@@ -316,10 +429,10 @@ bStatus_t RoboRoachProfile_SetParameter( uint8 param, uint8 len, void *value )
       }
       break;
 
-    case ROBOROACH_NUM_PULSES:
+    case ROBOROACH_DURATION:
       if ( len == sizeof ( uint8 ) ) 
       {
-        rrCharNumPulses = *((uint8*)value);
+        rrCharDurationIn5msIncrements = *((uint8*)value);
         roboRoachProfile_updateStimulationSettings();
       }
       else
@@ -340,11 +453,23 @@ bStatus_t RoboRoachProfile_SetParameter( uint8 param, uint8 len, void *value )
       }
       break;
 
-    case ROBOROACH_STIMUATE_LEFT:
-    case ROBOROACH_STIMUATE_RIGHT:
+    case ROBOROACH_GAIN:
       if ( len == sizeof ( uint8 ) ) 
       {
-        //Call and pass ROBOROACH_STIMUATE_LEFT or ROBOROACH_STIMUATE_RIGHT
+        rrCharGain = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+      
+    case ROBOROACH_STIMULATE_LEFT:
+    case ROBOROACH_STIMULATE_RIGHT:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        //Call and pass ROBOROACH_STIMULATE_LEFT or ROBOROACH_STIMULATE_RIGHT
         roboRoachProfile_Stimulate( param );   
         
       }
@@ -354,6 +479,78 @@ bStatus_t RoboRoachProfile_SetParameter( uint8 param, uint8 len, void *value )
       }
       break;
 
+    case ROBOROACH_FREQ_MIN:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        rrCharFreqMin = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+      
+    case ROBOROACH_FREQ_MAX:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        rrCharFreqMax = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+      
+    case ROBOROACH_PW_MIN:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        rrCharPWmin = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+      
+    case ROBOROACH_PW_MAX:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        rrCharPWmax = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+
+    case ROBOROACH_GAIN_MIN:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        rrCharGainMin = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+      
+    case ROBOROACH_GAIN_MAX:
+      if ( len == sizeof ( uint8 ) ) 
+      {
+        rrCharGainMax = *((uint8*)value);
+        roboRoachProfile_updateStimulationSettings();
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+      
     default:
       ret = INVALIDPARAMETER;
       break;
@@ -388,17 +585,45 @@ bStatus_t RoboRoachProfile_GetParameter( uint8 param, void *value )
       *((uint8*)value) = rrCharPulseWidth;
       break;      
 
-    case ROBOROACH_NUM_PULSES:
-      *((uint8*)value) = rrCharNumPulses;
+    case ROBOROACH_DURATION:
+      *((uint8*)value) = rrCharDurationIn5msIncrements;
       break;  
 
     case ROBOROACH_RANDOM_MODE:
       *((uint8*)value) = rrCharRandomMode;
       break;  
 
+    case ROBOROACH_GAIN:
+      *((uint8*)value) = rrCharGain;
+      break;      
+      
     case ROBOROACH_STIM_PERIOD:
       *((uint16*)value) = stimulationPeriodInMilliseconds;
       break;  
+    
+    case ROBOROACH_FREQ_MIN:
+      *((uint8*)value) = rrCharFreqMin;
+      break;     
+      
+    case ROBOROACH_FREQ_MAX:
+      *((uint8*)value) = rrCharFreqMax;
+      break;  
+      
+    case ROBOROACH_PW_MIN:
+      *((uint8*)value) = rrCharPWmin;
+      break;     
+      
+    case ROBOROACH_PW_MAX:
+      *((uint8*)value) = rrCharPWmax;
+      break;  
+      
+    case ROBOROACH_GAIN_MIN:
+      *((uint8*)value) = rrCharGainMin;
+      break;     
+      
+    case ROBOROACH_GAIN_MAX:
+      *((uint8*)value) = rrCharGainMax;
+      break;        
       
     default:
       ret = INVALIDPARAMETER;
@@ -449,11 +674,19 @@ static uint8 roboRoachProfile_ReadAttrCB( uint16 connHandle, gattAttribute_t *pA
       // No need for "GATT_SERVICE_UUID" or "GATT_CLIENT_CHAR_CFG_UUID" cases;
       // gattserverapp handles those reads
 
-      // Freq, Pulse, NumPulses, and Random Mode characteristics are all Readable.
+      // Freq, Pulse, Duration, and Random Mode characteristics are all Readable.
       case ROBOROACH_CHAR_FREQUENCY_UUID:
       case ROBOROACH_CHAR_PULSE_WIDTH_UUID:
-      case ROBOROACH_CHAR_NUM_PULSES_UUID:
+      case ROBOROACH_CHAR_DURATION_IN_5MS_UUID:
       case ROBOROACH_CHAR_RANDOM_MODE_UUID:
+      case ROBOROACH_CHAR_GAIN_UUID: 
+      case ROBOROACH_CHAR_FREQ_MIN_UUID:
+      case ROBOROACH_CHAR_FREQ_MAX_UUID:
+      case ROBOROACH_CHAR_PW_MIN_UUID:
+      case ROBOROACH_CHAR_PW_MAX_UUID:
+      case ROBOROACH_CHAR_GAIN_MIN_UUID:
+      case ROBOROACH_CHAR_GAIN_MAX_UUID: 
+      
         *pLen = 1;
         pValue[0] = *pAttr->pValue;
         break;
@@ -513,8 +746,15 @@ static bStatus_t roboRoachProfile_WriteAttrCB( uint16 connHandle, gattAttribute_
     {
       case ROBOROACH_CHAR_FREQUENCY_UUID:
       case ROBOROACH_CHAR_PULSE_WIDTH_UUID:
-      case ROBOROACH_CHAR_NUM_PULSES_UUID:
+      case ROBOROACH_CHAR_DURATION_IN_5MS_UUID:
       case ROBOROACH_CHAR_RANDOM_MODE_UUID:
+      case ROBOROACH_CHAR_GAIN_UUID:
+      case ROBOROACH_CHAR_FREQ_MIN_UUID:
+      case ROBOROACH_CHAR_FREQ_MAX_UUID:
+      case ROBOROACH_CHAR_PW_MIN_UUID:
+      case ROBOROACH_CHAR_PW_MAX_UUID:
+      case ROBOROACH_CHAR_GAIN_MIN_UUID:
+      case ROBOROACH_CHAR_GAIN_MAX_UUID: 
       
         //Validate the value (Make sure it's not a blob oper)
         if ( offset == 0 )
@@ -610,14 +850,24 @@ static void roboRoachProfile_updateStimulationSettings( void )
   // Time_MS = 1/Freq * 1000  
   stimulationPeriodInMilliseconds = (1000/rrCharFrequency);
    
-  //Calculate the Duty Cycle
+  //Calculate the Duty Cycle   
   // (Pulse Width / Period) * 100
   float tempDutyCycle = 100*rrCharPulseWidth/stimulationPeriodInMilliseconds;
+  //float floatingPW = 0;
   if (tempDutyCycle > 100) {
    tempDutyCycle = 100;
   }
   stimulationDutyCycle = (uint8) tempDutyCycle;
-  offsetTime = stimulationPeriodInMilliseconds * (rrCharNumPulses+1);
+  offsetTime = stimulationPeriodInMilliseconds * (rrCharDurationIn5msIncrements+1);
+  
+  //[wjr]Makes sure the duty cycle is never greater than 70%
+  /*
+  if(stimulationDutyCycle > 70)
+  {
+    floatingPW = (0.7)*rrCharPulseWidth;
+    rrCharPulseWidth = (uint8)floatingPW;
+  }
+  */
   
   //AT_DBG( "Up: F[%i] P[%i] PW[%i] Cy[%i] Dur[%i]",  
   //            rrCharFrequency , 

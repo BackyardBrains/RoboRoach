@@ -2,9 +2,18 @@ Version 0.1
 -----------
 Original Relase.
 
-Version 0.2 - 19-May-2018
+Version 0.2 - 19-May-2013
 -----------
 + Added Board 1.0g profile.
 + Added support for Low Energy Connection Lights
 ? Known issue: Can recieve confusing commands (Too long Pulse Widths for given frequency)
 
+Verson 0.3 - 8-Nov-2013
+-----------
++ Added Initial Release Board 1.1b to Profile
++ Added Gain Control using MCP42XX Digital Pot
+- Removed Number of Pulses as a paramter
++ Added Duration as a paramter
++ Added more control over randomized stimulous: Freq (Min, Max) PW(Min, Max)
++ Added Wake Up Button
++ Added Sleep Timer

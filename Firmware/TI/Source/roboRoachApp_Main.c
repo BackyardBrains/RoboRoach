@@ -44,6 +44,7 @@ void MSA_Main_KeyCallback(uint8 keys, uint8 state);
  */
 int main(void)
 {
+  
   /* Initialize hardware */
   HAL_BOARD_INIT();
 
@@ -73,7 +74,7 @@ int main(void)
 
   /* Start OSAL */
   osal_start_system(); // No Return from here
-
+    
   return 0;
 }
 

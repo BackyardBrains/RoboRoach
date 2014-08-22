@@ -19,6 +19,7 @@
 #include "hal_led.h"
 #include "hal_key.h"
 #include "hal_lcd.h"
+#include "hal_sleep.h" 
 
 #include "gatt.h"
 
@@ -30,6 +31,8 @@
 #include "battservice.h"
 #include "roboRoach_GATTprofile.h"
 #include "roboRoach.h"
+
+#include "MCP4000.h"
 
 #if defined ( PLUS_BROADCASTER )
   #include "peripheralBroadcaster.h"
@@ -57,7 +60,7 @@
 
 
 // What is the advertising interval when device is discoverable (units of 625us, 160=100ms)
-#define DEFAULT_ADVERTISING_INTERVAL          160
+#define DEFAULT_ADVERTISING_INTERVAL          160 
 
 // Whether to enable automatic parameter update request when a connection is formed
 #define DEFAULT_ENABLE_UPDATE_REQUEST         FALSE
@@ -119,12 +122,20 @@ bool isConnected = FALSE;
 
 uint8   connectPulseCount = 0;   
 uint8   stimulationPulseCount = 0;   
+uint16  stimulationCurrentDuration = 0;   
 uint8   stimulationInProgress = 0;   
 uint8   stimulationIsLeft = 0;
 uint16  stimulationPeriod = 0;
 uint8   stimulationPulseWidth = 0;
-uint8   stimulationNumberOfPulses = 0;
+uint8   stimulationDurationIn5msIncrements = 0;
 uint8   stimulationRandomMode = 0;
+uint8   stimulationGain = 0; 
+uint8   stimulationFreqMin = 0;
+uint8   stimulationFreqMax = 0;  
+uint8   stimulationPWmin = 0;
+uint8   stimulationPWmax = 0;
+uint8   stimulationGainMin = 0;
+uint8   stimulationGainMax = 0;
    
 static uint8 roboRoachApp_TaskID;   // Task ID for internal task/event processing
 
@@ -189,12 +200,12 @@ static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "RoboRoach";
 static void roboRoachApp_ProcessOSALMsg( osal_event_hdr_t *pMsg );
 static void peripheralStateNotificationCB( gaprole_States_t newState );
 static void roboRoachProfileChangeCB( uint8 paramID );
+static void ifZero(void);
+bool areEqual(uint8 minVal, uint8 maxVal);
 
 #if defined( CC2540_MINIDK )
-static void roboRoachApp_HandleKeys( uint8 shift, uint8 keys );
+//static void roboRoachApp_HandleKeys( uint8 shift, uint8 keys );
 #endif
-
-
 
 
 /*********************************************************************
@@ -242,16 +253,15 @@ static roboRoachProfileCBs_t roboRoachApp_RoboRoachProfileCBs =
 void RoboRoachPeripheral_Init( uint8 task_id )
 {
   roboRoachApp_TaskID = task_id;
-
+  
   // Setup the GAP Peripheral Role Profile
   {
-
-    #if defined( CC2540_MINIDK )
+    #if defined( CC2540DK_MINI )
       // For the CC2540DK-MINI keyfob, device doesn't start advertising until button is pressed
       uint8 initial_advertising_enable = FALSE;
     #else
       // For other hardware platforms, device starts advertising upon initialization
-      uint8 initial_advertising_enable = TRUE;
+      uint8 initial_advertising_enable = TRUE;  
     #endif
 
     // By setting this to zero, the device will go into the waiting state after
@@ -315,19 +325,33 @@ void RoboRoachPeripheral_Init( uint8 task_id )
   RoboRoachProfile_AddService( roboRoachApp_TaskID );  // Simple GATT Profile
 
 #if defined FEATURE_OAD
- // VOID OADTarget_AddService();                    // OAD Profile
+  // VOID OADTarget_AddService();                    // OAD Profile 
 #endif
 
-  // Setup the RoboRoach Profile Characterisitc Values
+  // Setup the RoboRoach Profile Characteristic Values (to Defaults)
   {
     uint8 charValue1 = 55; // ROBOROACH_FREQUENCY (55 Hz)
     uint8 charValue2 = 9;  // ROBOROACH_PULSE_WIDTH (9 ms)
-    uint8 charValue3 = 55; // ROBOROACH_NUM_PULSES (1 s)
+    uint8 charValue3 = 100; // ROBOROACH_DURATION (500 ms)
     uint8 charValue4 = 0;  // ROBOROACH_RANDOM_MODE (Disabled)
+    uint8 charValue5 = 50; // ROBOROACH_GAIN (50%) 
+    uint8 charValue6 = 40; // ROBOROACH_FREQ_MIN (40 Hz)     
+    uint8 charValue7 = 100; // ROBOROACH_FREQ_MAX (100 Hz)     
+    uint8 charValue8 = 1; // ROBOROACH_PW_MIN (1 ms)     
+    uint8 charValue9 = 9; // ROBOROACH_PW_MAX (9 ms)     
+    uint8 charValue10 = 50; // ROBOROACH_GAIN_MIN (40%)  
+    uint8 charValue11 = 50; // ROBOROACH_GAIN_MAX (60%) 
     RoboRoachProfile_SetParameter( ROBOROACH_FREQUENCY, sizeof ( uint8 ), &charValue1 );
     RoboRoachProfile_SetParameter( ROBOROACH_PULSE_WIDTH, sizeof ( uint8 ), &charValue2 );
-    RoboRoachProfile_SetParameter( ROBOROACH_NUM_PULSES , sizeof ( uint8 ), &charValue3 );
+    RoboRoachProfile_SetParameter( ROBOROACH_DURATION , sizeof ( uint8 ), &charValue3 );
     RoboRoachProfile_SetParameter( ROBOROACH_RANDOM_MODE, sizeof ( uint8 ), &charValue4 );
+    RoboRoachProfile_SetParameter( ROBOROACH_GAIN, sizeof ( uint8 ), &charValue5 );
+    RoboRoachProfile_SetParameter( ROBOROACH_FREQ_MAX, sizeof ( uint8 ), &charValue6 );
+    RoboRoachProfile_SetParameter( ROBOROACH_FREQ_MAX, sizeof ( uint8 ), &charValue7 );
+    RoboRoachProfile_SetParameter( ROBOROACH_PW_MIN, sizeof ( uint8 ), &charValue8 );
+    RoboRoachProfile_SetParameter( ROBOROACH_PW_MAX, sizeof ( uint8 ), &charValue9 );
+    RoboRoachProfile_SetParameter( ROBOROACH_GAIN_MIN, sizeof ( uint8 ), &charValue10 );  
+    RoboRoachProfile_SetParameter( ROBOROACH_GAIN_MAX, sizeof ( uint8 ), &charValue11 );  
     
     DevInfo_SetParameter(DEVINFO_MANUFACTURER_NAME, 16, "Backyard Brains");
     
@@ -335,21 +359,35 @@ void RoboRoachPeripheral_Init( uint8 task_id )
 
 /* Modes */
 
-  //[GJG] - This is configuring the port.
+  //[GJG] - This is configuring the ports.
   P0SEL = 0; // Configure Port 0 as GPIO
   P1SEL = 0; // Configure Port 1 as GPIO
   P2SEL = 0; // Configure Port 2 as GPIO
 
-  P0DIR = 0xFF; // Was 0xFC Port 0 pins P0.0 and P0.1 as input (buttons),
-                // all others (P0.2-P0.7) as output
+#if defined (ROBODEV)
+  P0DIR = 0xBF; // Port 0 pin P0.6 as input, all others as output  
+                // [wjr]:TESTING ----- 0xFD for DB for SW1 (P0.1)
+                //P1DIR = 0xDF; // 1.5 is input. All other port 1 as output. for SW2 (P0.1)
+  P1DIR = 0xFF; // 1.5 is input. All other port 1 as output
+  
+#else //Normal RoboRoach (1.1B)
+  P0DIR = 0xBF; // Port 0 pin P0.6 as input (button), all others as output  
   P1DIR = 0xFF; // All port 1 pins (P1.0-P1.7) as output
-  P2DIR = 0x1F; // All port 1 pins (P2.0-P2.4) as output
+#endif
+  
+  P2DIR = 0x1F; // All port 2 pins (P2.0-P2.4) as output
 
   //Turn it all off!
   P0 = 0; P1 = 0; P2 = 0;
   
   // initialize the ADC for battery reads
   HalAdcInit();
+  
+  //initialize SPI for digipot 
+  potInit();
+  
+  //initialize power management mode 
+  osal_pwrmgr_init();
   
   // Register callback with SimpleGATTprofile
   VOID RoboRoachProfile_RegisterAppCBs( &roboRoachApp_RoboRoachProfileCBs );
@@ -360,15 +398,12 @@ void RoboRoachPeripheral_Init( uint8 task_id )
   HCI_EXT_ClkDivOnHaltCmd( HCI_EXT_ENABLE_CLK_DIVIDE_ON_HALT );
 
 #if defined ( DC_DC_P0_7 )
-
   // Enable stack to toggle bypass control on TPS62730 (DC/DC converter)
   HCI_EXT_MapPmIoPortCmd( HCI_EXT_PM_IO_PORT_P0, HCI_EXT_PM_IO_PORT_PIN7 );
-
 #endif // defined ( DC_DC_P0_7 )
 
   // Setup a delayed profile startup
   osal_set_event( roboRoachApp_TaskID, BYB_START_DEVICE_EVT );
-
 }
 
 /*********************************************************************
@@ -412,10 +447,10 @@ uint16 RoboRoachPeripheral_ProcessEvent( uint8 task_id, uint16 events )
 
     // Start Bond Manager
     VOID GAPBondMgr_Register( &roboRoachApp_BondMgrCBs );
-
-    // Set timer for first battery read event
-    osal_start_timerEx(  roboRoachApp_TaskID, BYB_BATTERY_CHECK_EVT, BYB_BATTERY_CHECK_PERIOD );
-
+    
+    //Start timer which sets Sleep event if not connected after BYB_DISCONNECT_PERIOD_B4_SLEEP ms
+    osal_start_timerEx( roboRoachApp_TaskID, BYB_SLEEP_EVT, BYB_DISCONNECT_PERIOD_B4_SLEEP );
+    
     return ( events ^ BYB_START_DEVICE_EVT );
   }
   
@@ -430,37 +465,98 @@ uint16 RoboRoachPeripheral_ProcessEvent( uint8 task_id, uint16 events )
     // perform battery level check
     Batt_MeasLevel( );
 
+       #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+         HalLcdWriteString( "battery Check",  HAL_LCD_LINE_2 );
+       #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+    
     return (events ^ BYB_BATTERY_CHECK_EVT);
   }
-
-   
-  //Connection Begin Pulse (Startup) 
-  if ( events & BYB_CONNECT_STARTUP_PULSE_ON_EVT )
-  {
-    // Blink the Connect Lights
-    if ( ++connectPulseCount  < BYB_CONNECT_STARTUP_NUM_PULSES ) //
-    {
-      //Load up the next Start Blink
-      osal_start_timerEx( roboRoachApp_TaskID, BYB_CONNECT_STARTUP_PULSE_ON_EVT, BYB_CONNECT_STARTUP_PULSE_PERIOD );
-      osal_start_timerEx( roboRoachApp_TaskID, BYB_CONNECT_STARTUP_PULSE_OFF_EVT, BYB_CONNECT_STARTUP_PULSE_WIDTH );
-    }
-    else
-    {
-      //Start the standard Connect Blink (Low Power)
-      osal_start_timerEx( roboRoachApp_TaskID, BYB_CONNECT_PULSE_ON_EVT, BYB_CONNECT_PULSE_PERIOD );
-    } 
+  
+  // Write Gain value to the digital potentiometer
+  Gain_SetLevel( stimulationGain );  
     
-    ROBOROACH_PIO_LED_CONNECTION_1 = 1;
-    ROBOROACH_PIO_LED_CONNECTION_2 = 1;
-    return (events ^ BYB_CONNECT_STARTUP_PULSE_ON_EVT);
-  } 
-
-  //Connection End Pulse (Startup) 
-  if ( events & BYB_CONNECT_STARTUP_PULSE_OFF_EVT )
+/**************************
+* Sleep RoboRoach, sleep...
+*     1) put the roboroach to sleep after # ms being disconnected
+*     2) Wake up button will enable advertising mode for # ms
+****************************/
+//Put it to sleep! [wjr]--> PM2 or PM3?
+  if ( events & BYB_SLEEP_EVT )
   {
-    ROBOROACH_PIO_LED_CONNECTION_1 = 0;
-    ROBOROACH_PIO_LED_CONNECTION_2 = 0;
-    return (events ^ BYB_CONNECT_STARTUP_PULSE_OFF_EVT);
+    // don't put to sleep if connected
+    if (gapProfileState == GAPROLE_CONNECTED)
+    {
+      return (events ^ BYB_SLEEP_EVT);
+    }
+      
+    // turn off advertising
+    uint8 advertising_enabill = FALSE;
+    GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advertising_enabill );
+    
+    // stop timers that may be running
+    osal_stop_timerEx( 0x00, 0x0100 ); //stop LL ? timer
+    osal_stop_timerEx( 0x0B, 0x0004 ); //stop RR battery check timer
+    osal_stop_timerEx( 0x0B, 0x2000 ); //stop RR sleep evt timer
+    osal_stop_timerEx( 0x00, 0x0000 ); //stop LL ? timer
+    osal_stop_timerEx( 0x00, 0x0020 ); //stop LL ? timer 
+    osal_stop_timerEx( 0x0B, 0x0010 ); //stop RR ADV Pulse On timer
+    
+    //[wjr!!!!] for TESTING: 
+    //osalFindTimer( roboRoachApp_TaskID, 0x0008 );
+        //looks for a timer for an event we don't use = see all active timers!
+        //not sure if stopping them really helps, maybe need to delete. something might still be running...
+        //-->another idea: hack the findTimer function to seek and destroy all remaining timers?
+    
+    // sets the processor/system into sleep
+    osal_pwrmgr_powerconserve();  
+    
+    return (events ^ BYB_SLEEP_EVT);
+  }
+
+  // Button pressed: Interrupt subroutine
+  if ( events & BYB_WAKE_UP_EVT )
+  {
+      //If connected, don't start timer for sleep event
+      if (gapProfileState == GAPROLE_CONNECTED)
+      {
+        return (events ^ BYB_WAKE_UP_EVT);
+      }
+      
+      else //RR is sleeping, wake it up
+      {
+        //Turn on advertising 
+        uint8 advertising_enable = TRUE;
+        GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advertising_enable );
+    
+        // start timer to go to sleep if not connected after BYB_DISCONNECT_PERIOD_B4_SLEEP ms
+        osal_start_timerEx( roboRoachApp_TaskID, BYB_SLEEP_EVT, BYB_DISCONNECT_PERIOD_B4_SLEEP );
+      }
+    
+    return (events ^ BYB_WAKE_UP_EVT);
+  }
+
+  //Blink LEDs on Advertising - Begin Pulse
+  if ( events & BYB_ADV_PULSE_ON_EVT )
+  {
+    //Load up the next Start Blink
+    if ( gapProfileState != GAPROLE_CONNECTED )
+    {
+      osal_start_timerEx( roboRoachApp_TaskID, BYB_ADV_PULSE_ON_EVT, BYB_ADV_PULSE_PERIOD );
+    }
+    
+    osal_start_timerEx( roboRoachApp_TaskID, BYB_ADV_PULSE_OFF_EVT, BYB_ADV_PULSE_WIDTH );
+
+    ROBOROACH_PIO_LED_LEFT = 1;
+    ROBOROACH_PIO_LED_RIGHT = 1;
+    return (events ^ BYB_ADV_PULSE_ON_EVT);
+  } 
+  
+  //Blink LEDs on Advertising - End Pulse 
+  if ( events & BYB_ADV_PULSE_OFF_EVT )
+  {
+    ROBOROACH_PIO_LED_LEFT = 0;
+    ROBOROACH_PIO_LED_RIGHT = 0;
+    return (events ^ BYB_ADV_PULSE_OFF_EVT);
   } 
   
   //Connection Begin Pulse (Connected) 
@@ -491,6 +587,7 @@ uint16 RoboRoachPeripheral_ProcessEvent( uint8 task_id, uint16 events )
        return (events ^ BYB_STIMULATE_LEFT_EVT);
     }
     stimulationIsLeft = 1;
+    stimulationCurrentDuration = 0;
     startRoboRoachStimulation();
     
     return (events ^ BYB_STIMULATE_LEFT_EVT);
@@ -503,6 +600,7 @@ uint16 RoboRoachPeripheral_ProcessEvent( uint8 task_id, uint16 events )
        return (events ^  BYB_STIMULATE_RIGHT_EVT);
     }
     stimulationIsLeft = 0;
+    stimulationCurrentDuration = 0;
     startRoboRoachStimulation();
     
     return (events ^ BYB_STIMULATE_RIGHT_EVT);
@@ -511,13 +609,41 @@ uint16 RoboRoachPeripheral_ProcessEvent( uint8 task_id, uint16 events )
   //Handle the Stimulation Pulses
   if ( events & BYB_STIMULATE_PULSE_ON_EVT )
   {
-     if (stimulationRandomMode) {
-        stimulationPeriod = osal_rand() % (BYB_MAX_STIMULATE_PERIOD - BYB_MIN_STIMULATE_PERIOD) + BYB_MIN_STIMULATE_PERIOD;
-        stimulationPulseWidth = osal_rand() % (BYB_MAX_STIMULATE_PULSE_WIDTH - BYB_MIN_STIMULATE_PULSE_WIDTH) + BYB_MIN_STIMULATE_PULSE_WIDTH;
+    if (stimulationRandomMode) 
+    {  
+      //ifZero() prevents divison by zero in the 'random mode' calculations
+      //     by setting any of the stim params that are zero to one
+      ifZero();       
+    
+       //areEqual() sets that parameter to non random
+       if(areEqual(stimulationFreqMin, stimulationFreqMax)){
+         stimulationPeriod = 1000/stimulationFreqMin;
+       }
+       else{
+          stimulationPeriod = osal_rand() % ((1000/stimulationFreqMin) - (1000/stimulationFreqMax)) + (1000/stimulationFreqMax);
+       }
+      
+       //areEqual() sets that parameter to non random
+       if(areEqual(stimulationPWmin, stimulationPWmax)){
+         stimulationPulseWidth = stimulationPWmin;
+       }
+       else{
+          stimulationPulseWidth = osal_rand() % (stimulationPWmax - stimulationPWmin) + stimulationPWmin; 
+       }
+      
+       //areEqual() sets that parameter to non random
+       if(areEqual(stimulationGainMin, stimulationGainMax)){
+         stimulationGain = stimulationGainMin;
+       }
+       else{
+          stimulationGain = osal_rand() % ( stimulationGainMax - stimulationGainMin) + stimulationGainMin;
+       }
      }
-     
+    
+    stimulationCurrentDuration += stimulationPeriod;
+    
     // Restart timer
-    if ( ++stimulationPulseCount  < stimulationNumberOfPulses ) //
+    if ( stimulationCurrentDuration < (uint16)(stimulationDurationIn5msIncrements * 5) ) //Change to check for Duration
     {
       osal_start_timerEx( roboRoachApp_TaskID, BYB_STIMULATE_PULSE_ON_EVT, stimulationPeriod );
     } else 
@@ -553,10 +679,11 @@ uint16 RoboRoachPeripheral_ProcessEvent( uint8 task_id, uint16 events )
     #endif
     return (events ^ BYB_STIMULATE_FINISHED_EVT);
   } 
-    
+
   // Discard unknown events
   return 0;
 }
+
 
 void startRoboRoachStimulation(){
   
@@ -564,14 +691,21 @@ void startRoboRoachStimulation(){
   stimulationPulseCount = 0;   
 
   RoboRoachProfile_GetParameter( ROBOROACH_STIM_PERIOD, &stimulationPeriod);
-  RoboRoachProfile_GetParameter( ROBOROACH_NUM_PULSES,  &stimulationNumberOfPulses);
+  RoboRoachProfile_GetParameter( ROBOROACH_DURATION,  &stimulationDurationIn5msIncrements);
   RoboRoachProfile_GetParameter( ROBOROACH_PULSE_WIDTH, &stimulationPulseWidth);
   RoboRoachProfile_GetParameter( ROBOROACH_RANDOM_MODE, &stimulationRandomMode);
-
+  RoboRoachProfile_GetParameter( ROBOROACH_GAIN, &stimulationGain); 
+  RoboRoachProfile_GetParameter( ROBOROACH_FREQ_MIN, &stimulationFreqMin); 
+  RoboRoachProfile_GetParameter( ROBOROACH_FREQ_MAX, &stimulationFreqMax);   
+  RoboRoachProfile_GetParameter( ROBOROACH_PW_MIN, &stimulationPWmin); 
+  RoboRoachProfile_GetParameter( ROBOROACH_PW_MAX, &stimulationPWmax);  
+  RoboRoachProfile_GetParameter( ROBOROACH_GAIN_MIN, &stimulationGainMin); 
+  RoboRoachProfile_GetParameter( ROBOROACH_GAIN_MAX, &stimulationGainMax);    
+  
   //Start Immediately (1ms)
   osal_start_timerEx( roboRoachApp_TaskID, BYB_STIMULATE_PULSE_ON_EVT, 1 );
   #ifndef ROBOROACH_V10B
-     stimulationIsLeft ? (ROBOROACH_PIO_LED_LEFT = 1) : (ROBOROACH_PIO_LED_RIGHT = 1);
+    stimulationIsLeft ? (ROBOROACH_PIO_LED_LEFT = 1) : (ROBOROACH_PIO_LED_RIGHT = 1);
   #endif
 }
 
@@ -591,17 +725,17 @@ static void roboRoachApp_ProcessOSALMsg( osal_event_hdr_t *pMsg )
   switch ( pMsg->event )
   {
   #if defined( CC2540_MINIDK )
-    case KEY_CHANGE:
-      roboRoachApp_HandleKeys( ((keyChange_t *)pMsg)->state, ((keyChange_t *)pMsg)->keys );
+  
+  case KEY_CHANGE:
+      //roboRoachApp_HandleKeys( ((keyChange_t *)pMsg)->state, ((keyChange_t *)pMsg)->keys );
       break;
   #endif // #if defined( CC2540_MINIDK )
-
+      
   default:
     // do nothing
     break;
   }
 }
-
 
 /*********************************************************************
  * @fn      peripheralStateNotificationCB
@@ -650,6 +784,9 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
           
         //Turn off everything.  
         P0 = 0; P1 = 0; P2 = 0;  
+        
+        //blink yellow LEDs slowly to indicate advertising
+        osal_start_timerEx( roboRoachApp_TaskID, BYB_ADV_PULSE_ON_EVT, 1 );
       }
       break;
 
@@ -661,24 +798,35 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
         
         connectPulseCount = 0;
         isConnected = TRUE;
-        osal_start_timerEx( roboRoachApp_TaskID, BYB_CONNECT_STARTUP_PULSE_ON_EVT, 1 );
         
+        //start connection lights
+        osal_start_timerEx( roboRoachApp_TaskID, BYB_CONNECT_PULSE_ON_EVT, 1 ); 
+        
+        //start battery check
+        osal_start_timerEx( roboRoachApp_TaskID, BYB_BATTERY_CHECK_EVT, BYB_BATTERY_CHECK_PERIOD ); 
       }
       break;
       
     case GAPROLE_WAITING:
       {
         #if (defined HAL_LCD) && (HAL_LCD == TRUE)
-          HalLcdWriteString( "Disconnected",  HAL_LCD_LINE_3 );
+          HalLcdWriteString( "Disconnected",  HAL_LCD_LINE_1 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
-        isConnected = FALSE;
+                
+        if( isConnected == TRUE ) //just returned from connected state, start timer for Sleep Evt
+        {
+          osal_start_timerEx( roboRoachApp_TaskID, BYB_SLEEP_EVT, BYB_DISCONNECT_PERIOD_B4_SLEEP );
+        }
+        
+        isConnected = FALSE;   
+        
       }
       break;
 
     case GAPROLE_WAITING_AFTER_TIMEOUT:
       {
         #if (defined HAL_LCD) && (HAL_LCD == TRUE)
-          HalLcdWriteString( "Timed Out",  HAL_LCD_LINE_3 );
+          HalLcdWriteString( "Timed Out",  HAL_LCD_LINE_1 );
         #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
         isConnected = FALSE;
       }
@@ -745,11 +893,164 @@ static void roboRoachProfileChangeCB( uint8 paramID )
 
       break;
 
+     case  ROBOROACH_GAIN: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_GAIN, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Gain:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;      
+    
+     case  ROBOROACH_DURATION: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_DURATION, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Duration:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;  
+      
+     case  ROBOROACH_STIMULATE_LEFT: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_STIMULATE_LEFT, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Left Stim:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;        
+      
+     case  ROBOROACH_STIMULATE_RIGHT: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_STIMULATE_RIGHT, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Right Stim:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;           
+      
+    //6NEW  
+     case  ROBOROACH_FREQ_MIN: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_FREQ_MIN, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Freq. Min:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;  
+   
+     case  ROBOROACH_FREQ_MAX: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_FREQ_MAX, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Freq. Max:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;   
+      
+     case  ROBOROACH_PW_MIN: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_PW_MIN, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Pulse Width Min:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;  
+   
+     case  ROBOROACH_PW_MAX: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_PW_MAX, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Pulse Width Max:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;  
+
+     case  ROBOROACH_GAIN_MIN: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_GAIN_MIN, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Gain Min:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;  
+   
+     case  ROBOROACH_GAIN_MAX: 
+      RoboRoachProfile_GetParameter(  ROBOROACH_GAIN_MAX, &newValue );
+
+      #if (defined HAL_LCD) && (HAL_LCD == TRUE)
+        HalLcdWriteStringValue( "Gain Max:", (uint16)(newValue), 10,  HAL_LCD_LINE_3 );
+      #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
+
+      break;        
+
     default:
       // should not reach here!
       break;
   }
 }
+
+/*********************************************************************
+ * @fn      ifZero()
+ *
+ * @brief   prevents divison by zero in "randomize mode" calculation 
+ *          by changing any value of 0 to 1
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void ifZero(void)
+{
+      if(stimulationFreqMin == 0)
+      {
+       stimulationFreqMin = 1;
+      }
+      if(stimulationFreqMax == 0)
+      {
+       stimulationFreqMax = 1;
+      }
+      if(stimulationPWmin == 0)
+      {
+       stimulationPWmin = 1;
+      }
+      if(stimulationPWmax == 0)
+      {
+       stimulationPWmax = 1;
+      }
+      if(stimulationGainMin == 0)
+      {
+       stimulationGainMin = 1;
+      }
+      if(stimulationGainMax == 0)
+      {
+       stimulationGainMax = 1;
+      }  
+      return;
+}
+
+
+/*********************************************************************
+ * @fn      areEqual()
+ *
+ * @brief   Checks if the min and the max are equal
+ *
+ * @param   minVal and maxVal
+ *
+ * @return  true or false
+ */
+bool areEqual(uint8 minVal, uint8 maxVal)
+{
+  if(minVal == maxVal)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
 
 /*********************************************************************
 *********************************************************************/
