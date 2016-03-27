@@ -2,7 +2,7 @@
   Filename:       roboRoachProfile.h
 
   Description:    This file contains the RoboRoach profile definitions and
-                  prototypes.
+                  prototypes. 
 
   Copyright 2013 Backyard Brains Incorporated. Some rights reserved (just the good ones).
 

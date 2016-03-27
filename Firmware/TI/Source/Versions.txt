@@ -17,3 +17,5 @@ Verson 0.3 - 8-Nov-2013
 + Added more control over randomized stimulous: Freq (Min, Max) PW(Min, Max)
 + Added Wake Up Button
 + Added Sleep Timer
+Verson 0.4 - 27-Mar-2016
++ CC Project files updated 

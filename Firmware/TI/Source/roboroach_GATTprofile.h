@@ -1,5 +1,5 @@
 /**************************************************************************************************
-  Filename:       roboroach_GATTprofile.h
+  Filename:       roboroach_GATTprofile.h 
   
   Description:    This file contains the RoboRoach GATT profile definitions and
                   prototypes.

@@ -1,5 +1,5 @@
 /**************************************************************************************************
-  Filename:       RoboRoachApp.c
+  Filename:       RoboRoachApp.c 
  
   Description:    This file contains the RoboRoach Peripheral application
                   for use with the Backyard Brains RoboRoach.
@@ -247,7 +247,7 @@ static roboRoachProfileCBs_t roboRoachApp_RoboRoachProfileCBs =
  *
  * @param   task_id - the ID assigned by OSAL.  This ID should be
  *                    used to send messages and set timers.
- *
+ * 
  * @return  none
  */
 void RoboRoachPeripheral_Init( uint8 task_id )

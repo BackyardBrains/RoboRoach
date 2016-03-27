@@ -1,6 +1,6 @@
 /**************************************************************************************************
   Filename:       devinfoservice.h
-  Revised:        $Date $
+  Revised:        $Date $ 
   Revision:       $Revision $
 
   Description:    This file contains the Device Information service definitions and
