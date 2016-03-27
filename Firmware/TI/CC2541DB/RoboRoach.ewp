@@ -10,23 +10,11 @@
     <debug>1</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>1</archiveVersion>
+      <archiveVersion>2</archiveVersion>
       <data>
-        <version>5</version>
+        <version>7</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
-        <option>
-          <name>DerivativeDescriptionFile</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Previous Derivative File</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Showed Derivative</name>
-          <state>CC2541F256</state>
-        </option>
         <option>
           <name>CPU Core</name>
           <version>1</version>
@@ -250,13 +238,49 @@
           <version>0</version>
           <state>3</state>
         </option>
+        <option>
+          <name>Extended stack address</name>
+          <state>0x9B</state>
+        </option>
+        <option>
+          <name>Extended stack mask</name>
+          <state>0x03</state>
+        </option>
+        <option>
+          <name>Extended stack is offset</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenu</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenuSlave</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>DPC Address</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AutoModificationType</name>
+          <state></state>
+        </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>UseMDU</name>
+          <state></state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>ICC8051</name>
-      <archiveVersion>5</archiveVersion>
+      <archiveVersion>6</archiveVersion>
       <data>
-        <version>10</version>
+        <version>11</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -541,6 +565,10 @@
           <name>NoSizeConstraints</name>
           <state>0</state>
         </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -720,9 +748,9 @@
     </settings>
     <settings>
       <name>XLINK</name>
-      <archiveVersion>3</archiveVersion>
+      <archiveVersion>4</archiveVersion>
       <data>
-        <version>18</version>
+        <version>19</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -1042,6 +1070,10 @@
           <version>0</version>
           <state>0</state>
         </option>
+        <option>
+          <name>XLink DPC Address</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1070,6 +1102,11 @@
       </data>
     </settings>
     <settings>
+      <name>HWMUL</name>
+      <archiveVersion>0</archiveVersion>
+      <data/>
+    </settings>
+    <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
       <data/>
@@ -1083,23 +1120,11 @@
     <debug>0</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>1</archiveVersion>
+      <archiveVersion>2</archiveVersion>
       <data>
-        <version>5</version>
+        <version>7</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
-        <option>
-          <name>DerivativeDescriptionFile</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Previous Derivative File</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Showed Derivative</name>
-          <state>CC2541F256</state>
-        </option>
         <option>
           <name>CPU Core</name>
           <version>1</version>
@@ -1150,7 +1175,7 @@
         <option>
           <name>Workseg Size</name>
           <version>0</version>
-          <state>8</state>
+          <state>0</state>
         </option>
         <option>
           <name>Constant Placement</name>
@@ -1323,13 +1348,49 @@
           <version>0</version>
           <state>3</state>
         </option>
+        <option>
+          <name>Extended stack address</name>
+          <state>0x9B</state>
+        </option>
+        <option>
+          <name>Extended stack mask</name>
+          <state>0x03</state>
+        </option>
+        <option>
+          <name>Extended stack is offset</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenu</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenuSlave</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>DPC Address</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AutoModificationType</name>
+          <state></state>
+        </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>UseMDU</name>
+          <state></state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>ICC8051</name>
-      <archiveVersion>5</archiveVersion>
+      <archiveVersion>6</archiveVersion>
       <data>
-        <version>10</version>
+        <version>11</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1613,6 +1674,10 @@
           <name>NoSizeConstraints</name>
           <state>0</state>
         </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1792,9 +1857,9 @@
     </settings>
     <settings>
       <name>XLINK</name>
-      <archiveVersion>3</archiveVersion>
+      <archiveVersion>4</archiveVersion>
       <data>
-        <version>18</version>
+        <version>19</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -2114,6 +2179,10 @@
           <version>0</version>
           <state>0</state>
         </option>
+        <option>
+          <name>XLink DPC Address</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -2142,6 +2211,11 @@
       </data>
     </settings>
     <settings>
+      <name>HWMUL</name>
+      <archiveVersion>0</archiveVersion>
+      <data/>
+    </settings>
+    <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
       <data/>
@@ -2155,23 +2229,11 @@
     <debug>1</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>1</archiveVersion>
+      <archiveVersion>2</archiveVersion>
       <data>
-        <version>5</version>
+        <version>7</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
-        <option>
-          <name>DerivativeDescriptionFile</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Previous Derivative File</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Showed Derivative</name>
-          <state>CC2541F256</state>
-        </option>
         <option>
           <name>CPU Core</name>
           <version>1</version>
@@ -2222,7 +2284,7 @@
         <option>
           <name>Workseg Size</name>
           <version>0</version>
-          <state>8</state>
+          <state>0</state>
         </option>
         <option>
           <name>Constant Placement</name>
@@ -2395,13 +2457,49 @@
           <version>0</version>
           <state>3</state>
         </option>
+        <option>
+          <name>Extended stack address</name>
+          <state>0x9B</state>
+        </option>
+        <option>
+          <name>Extended stack mask</name>
+          <state>0x03</state>
+        </option>
+        <option>
+          <name>Extended stack is offset</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenu</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenuSlave</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>DPC Address</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AutoModificationType</name>
+          <state></state>
+        </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>UseMDU</name>
+          <state></state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>ICC8051</name>
-      <archiveVersion>5</archiveVersion>
+      <archiveVersion>6</archiveVersion>
       <data>
-        <version>10</version>
+        <version>11</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -2686,6 +2784,10 @@
           <name>NoSizeConstraints</name>
           <state>0</state>
         </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -2865,9 +2967,9 @@
     </settings>
     <settings>
       <name>XLINK</name>
-      <archiveVersion>3</archiveVersion>
+      <archiveVersion>4</archiveVersion>
       <data>
-        <version>18</version>
+        <version>19</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -3187,6 +3289,10 @@
           <version>0</version>
           <state>0</state>
         </option>
+        <option>
+          <name>XLink DPC Address</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -3215,6 +3321,11 @@
       </data>
     </settings>
     <settings>
+      <name>HWMUL</name>
+      <archiveVersion>0</archiveVersion>
+      <data/>
+    </settings>
+    <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
       <data/>
@@ -3228,23 +3339,11 @@
     <debug>1</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>1</archiveVersion>
+      <archiveVersion>2</archiveVersion>
       <data>
-        <version>5</version>
+        <version>7</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
-        <option>
-          <name>DerivativeDescriptionFile</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Previous Derivative File</name>
-          <state>$TOOLKIT_DIR$\config\devices\Texas Instruments\CC2541F256.i51</state>
-        </option>
-        <option>
-          <name>Showed Derivative</name>
-          <state>CC2541F256</state>
-        </option>
         <option>
           <name>CPU Core</name>
           <version>1</version>
@@ -3468,13 +3567,49 @@
           <version>0</version>
           <state>3</state>
         </option>
+        <option>
+          <name>Extended stack address</name>
+          <state>0x9B</state>
+        </option>
+        <option>
+          <name>Extended stack mask</name>
+          <state>0x03</state>
+        </option>
+        <option>
+          <name>Extended stack is offset</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenu</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>OGChipSelectMenuSlave</name>
+          <state>CC2541F256	CC2541F256</state>
+        </option>
+        <option>
+          <name>DPC Address</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AutoModificationType</name>
+          <state></state>
+        </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>UseMDU</name>
+          <state></state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>ICC8051</name>
-      <archiveVersion>5</archiveVersion>
+      <archiveVersion>6</archiveVersion>
       <data>
-        <version>10</version>
+        <version>11</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -3758,6 +3893,10 @@
           <name>NoSizeConstraints</name>
           <state>0</state>
         </option>
+        <option>
+          <name>UseHWMulDivUnit</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -3937,9 +4076,9 @@
     </settings>
     <settings>
       <name>XLINK</name>
-      <archiveVersion>3</archiveVersion>
+      <archiveVersion>4</archiveVersion>
       <data>
-        <version>18</version>
+        <version>19</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -4259,6 +4398,10 @@
           <version>0</version>
           <state>0</state>
         </option>
+        <option>
+          <name>XLink DPC Address</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -4285,6 +4428,11 @@
           <state>###Uninitialized###</state>
         </option>
       </data>
+    </settings>
+    <settings>
+      <name>HWMUL</name>
+      <archiveVersion>0</archiveVersion>
+      <data/>
     </settings>
     <settings>
       <name>BILINK</name>
@@ -4316,7 +4464,7 @@
       <name>$PROJ_DIR$\..\Source\roboRoach_GATTprofile.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\roboRoach_GATTprofile.h</name>
+      <name>$PROJ_DIR$\..\Source\roboroach_GATTprofile.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\roboRoachApp.c</name>

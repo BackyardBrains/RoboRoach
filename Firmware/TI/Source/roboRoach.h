@@ -105,7 +105,7 @@ extern "C"
  #define ROBOROACH_PIO_LED_CONNECTION_2           P1_4  
  #define ROBOROACH_WAKE_UP_BUTTON                 P0_6 //[wjr] still requires breadboard button
 #else
- #define ROBOROACH_HARDWARE_VERSION               "1.1B" 
+ #define ROBOROACH_HARDWARE_VERSION               "1.21" //1.1B
  #define ROBOROACH_HAS_CONNECTION_LEDS            1 
  #define ROBOROACH_PIO_LED_LEFT                   P1_6  //Left turn - Lights up Right
  #define ROBOROACH_PIO_LED_RIGHT                  P1_7  //Right turn - Lights up Left

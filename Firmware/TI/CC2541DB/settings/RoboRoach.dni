@@ -8,6 +8,12 @@ UseTrigger=1
 TriggerName=main
 LimitSize=0
 ByteLimit=50
+[DebugChecksum]
+Checksum=-2074485379
+[CallStack]
+ShowArgs=0
+[Disassembly]
+MixedMode=1
 [InterruptLog]
 LogEnabled=0
 SumEnabled=0
@@ -35,12 +41,9 @@ ActionState=1
 [Trace1]
 Enabled=0
 ShowSource=1
-[DebugChecksum]
-Checksum=221785239
-[CallStack]
-ShowArgs=0
-[Disassembly]
-MixedMode=1
+[SfrWindow]
+Show=1 1
+Sort=4 0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -49,9 +52,9 @@ Category=_ 0
 LoggingEnabled=_ 0
 LogFile=_ ""
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_sleep.c}.369.10" 0 0 0 0 "" 0 ""
-Bp1=_ "STD_CODE" "{$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_sleep.c}.389.10" 0 0 0 0 "" 0 ""
-Bp2=_ "STD_CODE" "{$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Timers.c}.578.6" 0 0 0 0 "" 0 ""
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_sleep.c}.369.7" 0 0 0 0 "" 0 ""
+Bp1=_ "STD_CODE" "{$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_sleep.c}.389.7" 0 0 0 0 "" 0 ""
+Bp2=_ "STD_CODE" "{$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Timers.c}.578.5" 0 0 0 0 "" 0 ""
 Count=3
 [ChipconEmu]
 Stop timers on halt=0
