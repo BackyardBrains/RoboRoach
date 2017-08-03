@@ -9,9 +9,7 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <Foundation/Foundation.h>
 
-#ifdef TESTFLIGHT
-#import "TestFlight.h"
-#endif
+
 
 #define ROBOROACH_TURN_TIMEOUT 0.4
 

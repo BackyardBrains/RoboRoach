@@ -214,7 +214,7 @@ BOOL isConnected = NO;
     [stimulationSettings setHidden:YES];
     
     [connectButton setEnabled:YES];
-    [connectButton setTitle:@"Find RoboRoach" forState:UIControlStateNormal];
+    [connectButton setTitle:@"Find Signal Generator" forState:UIControlStateNormal];
     
     
     

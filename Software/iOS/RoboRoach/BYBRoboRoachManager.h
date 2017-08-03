@@ -41,6 +41,10 @@
 @end
 
 @interface BYBRoboRoachManager : NSObject <CBCentralManagerDelegate , CBPeripheralDelegate >
+{
+    long maximumSignalStrength;
+
+}
 
 @property (strong, nonatomic) NSMutableArray *peripherals;
 @property (strong, nonatomic) CBCentralManager *CM;

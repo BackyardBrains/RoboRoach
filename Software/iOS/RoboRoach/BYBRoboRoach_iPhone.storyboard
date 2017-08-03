@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="jgj-kF-llM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="jgj-kF-llM">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
     </dependencies>
     <scenes>
-        <!--Robo Roach View Controller - RoboRoach-->
+        <!--BYB remote-->
         <scene sceneID="CNf-oN-vV1">
             <objects>
                 <viewController id="FMD-8l-Gwo" customClass="BYBRoboRoachViewController" sceneMemberID="viewController">
@@ -14,9 +14,9 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="gq3-Y3-sPJ">
-                                <rect key="frame" x="89" y="510.5" width="157" height="30"/>
+                                <rect key="frame" x="89" y="511" width="157" height="30"/>
                                 <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                                <state key="normal" title="Find RoboRoach">
+                                <state key="normal" title="Find Signal Generator">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -27,22 +27,18 @@
                                 <rect key="frame" x="142" y="138" width="37" height="37"/>
                                 <color key="color" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="roachHD.png" id="Uuz-eB-l79">
-                                <rect key="frame" x="102" y="189.5" width="120" height="251"/>
-                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="32" maxX="0.0" maxY="-32"/>
-                            </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="BackbackHD.png" id="kF3-0c-R1N">
-                                <rect key="frame" x="112" y="257.5" width="110" height="187"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="connectedbybremote.png" id="kF3-0c-R1N">
+                                <rect key="frame" x="90" y="252" width="141" height="191"/>
                                 <inset key="insetFor6xAndEarlier" minX="0.0" minY="31" maxX="0.0" maxY="-31"/>
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Go Left!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zh0-KN-m5u">
-                                <rect key="frame" x="14" y="146.5" width="108" height="21"/>
+                                <rect key="frame" x="14" y="147" width="108" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Go Right!" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="frb-pM-grP">
-                                <rect key="frame" x="197" y="146.5" width="110" height="21"/>
+                                <rect key="frame" x="197" y="147" width="110" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
@@ -55,7 +51,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" segmentControlStyle="bar" selectedSegmentIndex="0" id="DmE-lC-xnt">
-                                <rect key="frame" x="14" y="94.5" width="293" height="29"/>
+                                <rect key="frame" x="14" y="95" width="293" height="29"/>
                                 <inset key="insetFor6xAndEarlier" minX="0.0" minY="50" maxX="0.0" maxY="-50"/>
                                 <segments>
                                     <segment title="5"/>
@@ -71,6 +67,10 @@
                                 <rect key="frame" x="14" y="516" width="19" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="notconnectedbybremote.png" id="lmn-Vt-SGh">
+                                <rect key="frame" x="89" y="252" width="141" height="191"/>
+                                <inset key="insetFor6xAndEarlier" minX="0.0" minY="31" maxX="0.0" maxY="-31"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                         <gestureRecognizers/>
@@ -78,7 +78,7 @@
                             <outletCollection property="gestureRecognizers" destination="3pb-FL-IVP" appends="YES" id="ce3-XM-G19"/>
                         </connections>
                     </view>
-                    <navigationItem key="navigationItem" title="RoboRoach" id="ORu-LY-JDY">
+                    <navigationItem key="navigationItem" title="BYB remote" id="ORu-LY-JDY">
                         <barButtonItem key="leftBarButtonItem" systemItem="bookmarks" id="HVf-xR-a6C">
                             <connections>
                                 <action selector="favoritesClicked:" destination="FMD-8l-Gwo" id="8HY-K6-vwU"/>
@@ -98,7 +98,6 @@
                         <outlet property="connectButton" destination="gq3-Y3-sPJ" id="pSi-1v-Zw2"/>
                         <outlet property="goLeft" destination="Zh0-KN-m5u" id="Wsg-YZ-HNR"/>
                         <outlet property="goRight" destination="frb-pM-grP" id="cdj-E0-c1p"/>
-                        <outlet property="roachImage" destination="Uuz-eB-l79" id="d03-RK-yWb"/>
                         <outlet property="spinner" destination="DYp-pi-V96" id="WKO-La-jow"/>
                         <outlet property="stimulationSettings" destination="b9X-jr-z5Y" id="HdZ-2c-cCB"/>
                         <outlet property="stimulationSettingsButton" destination="k4g-V5-vnt" id="KaL-X1-CwC"/>
@@ -128,9 +127,9 @@
                                 <inset key="insetFor6xAndEarlier" minX="0.0" minY="-6" maxX="0.0" maxY="71"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="ipK-Ee-tuL">
-                                        <rect key="frame" x="0.0" y="119" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="114" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ipK-Ee-tuL">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ipK-Ee-tuL" id="yry-Yz-LLM">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
@@ -177,9 +176,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="BackbackHD.png" width="268" height="500"/>
         <image name="battery-95.png" width="73" height="149"/>
-        <image name="roachHD.png" width="203" height="400"/>
+        <image name="connectedbybremote.png" width="530" height="717"/>
+        <image name="notconnectedbybremote.png" width="530" height="717"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

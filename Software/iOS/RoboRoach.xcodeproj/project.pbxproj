@@ -7,10 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1CF2F3CC1F3313B70051FD30 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CF2F3CB1F3313B70051FD30 /* libz.tbd */; };
+		240C440A1B2B1127009F456B /* connectedbybremote.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44081B2B1126009F456B /* connectedbybremote.png */; };
+		240C440B1B2B1127009F456B /* notconnectedbybremote.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44091B2B1126009F456B /* notconnectedbybremote.png */; };
+		240C440D1B2B1624009F456B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 240C440C1B2B1624009F456B /* Images.xcassets */; };
+		240C44171B2B1C0D009F456B /* icon40.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C440E1B2B1C0D009F456B /* icon40.png */; };
+		240C44181B2B1C0D009F456B /* icon40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C440F1B2B1C0D009F456B /* icon40@2x.png */; };
+		240C44191B2B1C0D009F456B /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44101B2B1C0D009F456B /* icon57.png */; };
+		240C441A1B2B1C0D009F456B /* icon57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44111B2B1C0D009F456B /* icon57@2x.png */; };
+		240C441B1B2B1C0D009F456B /* icon60.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44121B2B1C0D009F456B /* icon60.png */; };
+		240C441C1B2B1C0D009F456B /* icon60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44131B2B1C0D009F456B /* icon60@2x.png */; };
+		240C441D1B2B1C0D009F456B /* icon60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44141B2B1C0D009F456B /* icon60@3x.png */; };
+		240C441E1B2B1C0D009F456B /* icons29.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44151B2B1C0D009F456B /* icons29.png */; };
+		240C441F1B2B1C0D009F456B /* icons29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44161B2B1C0D009F456B /* icons29@2x.png */; };
+		240C44251B2B28E0009F456B /* splash480.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44201B2B28E0009F456B /* splash480.png */; };
+		240C44261B2B28E0009F456B /* splash960.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44211B2B28E0009F456B /* splash960.png */; };
+		240C44271B2B28E0009F456B /* splash1136.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44221B2B28E0009F456B /* splash1136.png */; };
+		240C44281B2B28E0009F456B /* splash1334.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44231B2B28E0009F456B /* splash1334.png */; };
+		240C44291B2B28E0009F456B /* splash2208.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44241B2B28E0009F456B /* splash2208.png */; };
+		245C99401B1F7BCD004286C8 /* SensibleTableView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 245C993F1B1F7BCD004286C8 /* SensibleTableView.framework */; };
 		6F089475174EDEA600AF3D7F /* Comic_Book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F089474174ED8E500AF3D7F /* Comic_Book.ttf */; };
-		6F280B08173307DA00BDBDF8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F280B07173307DA00BDBDF8 /* libz.dylib */; };
-		6F5BCAD918255B5400B77AFE /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5BCAD618255B5400B77AFE /* libTestFlight.a */; };
-		6F5FE05D1826B96800FA8647 /* SensibleTableView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5FE05C1826B96800FA8647 /* SensibleTableView.framework */; };
 		6F5FE06418273FBC00FA8647 /* battery-0.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE05E18273FBC00FA8647 /* battery-0.png */; };
 		6F5FE06518273FBC00FA8647 /* battery-25.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE05F18273FBC00FA8647 /* battery-25.png */; };
 		6F5FE06618273FBC00FA8647 /* battery-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F5FE06018273FBC00FA8647 /* battery-50.png */; };
@@ -35,22 +51,30 @@
 		6FC6B0ED1823408F001E798D /* BackbackHD.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FC6B0EC1823408F001E798D /* BackbackHD.png */; };
 		6FC6B0F11823471C001E798D /* LED-Left.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FC6B0F01823471C001E798D /* LED-Left.png */; };
 		6FC6B0F318235AAF001E798D /* roachHD.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FC6B0F218235AAF001E798D /* roachHD.png */; };
-		6FCADC1E1825DD7000C654B6 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC1C1825DD7000C654B6 /* Icon.png */; };
-		6FCADC1F1825DD7000C654B6 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC1D1825DD7000C654B6 /* Icon@2x.png */; };
-		6FCADC391825DF2000C654B6 /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC341825DF2000C654B6 /* AppIcon29x29.png */; };
-		6FCADC3A1825DF2000C654B6 /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC351825DF2000C654B6 /* AppIcon29x29@2x.png */; };
-		6FCADC3B1825DF2000C654B6 /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC361825DF2000C654B6 /* AppIcon40x40.png */; };
-		6FCADC3C1825DF2000C654B6 /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC371825DF2000C654B6 /* AppIcon40x40@2x.png */; };
-		6FCADC3D1825DF2000C654B6 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FCADC381825DF2000C654B6 /* AppIcon60x60@2x.png */; };
 		6FFDD11B174EC03A001CDD9C /* BYBRoboRoach_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FFDD11A174EC03A001CDD9C /* BYBRoboRoach_iPhone.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1CF2F3CB1F3313B70051FD30 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		240C44081B2B1126009F456B /* connectedbybremote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connectedbybremote.png; sourceTree = "<group>"; };
+		240C44091B2B1126009F456B /* notconnectedbybremote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notconnectedbybremote.png; sourceTree = "<group>"; };
+		240C440C1B2B1624009F456B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "BYB Remote/Images.xcassets"; sourceTree = "<group>"; };
+		240C440E1B2B1C0D009F456B /* icon40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon40.png; sourceTree = "<group>"; };
+		240C440F1B2B1C0D009F456B /* icon40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon40@2x.png"; sourceTree = "<group>"; };
+		240C44101B2B1C0D009F456B /* icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon57.png; sourceTree = "<group>"; };
+		240C44111B2B1C0D009F456B /* icon57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon57@2x.png"; sourceTree = "<group>"; };
+		240C44121B2B1C0D009F456B /* icon60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon60.png; sourceTree = "<group>"; };
+		240C44131B2B1C0D009F456B /* icon60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon60@2x.png"; sourceTree = "<group>"; };
+		240C44141B2B1C0D009F456B /* icon60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon60@3x.png"; sourceTree = "<group>"; };
+		240C44151B2B1C0D009F456B /* icons29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icons29.png; sourceTree = "<group>"; };
+		240C44161B2B1C0D009F456B /* icons29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons29@2x.png"; sourceTree = "<group>"; };
+		240C44201B2B28E0009F456B /* splash480.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash480.png; sourceTree = "<group>"; };
+		240C44211B2B28E0009F456B /* splash960.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash960.png; sourceTree = "<group>"; };
+		240C44221B2B28E0009F456B /* splash1136.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash1136.png; sourceTree = "<group>"; };
+		240C44231B2B28E0009F456B /* splash1334.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash1334.png; sourceTree = "<group>"; };
+		240C44241B2B28E0009F456B /* splash2208.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash2208.png; sourceTree = "<group>"; };
+		245C993F1B1F7BCD004286C8 /* SensibleTableView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SensibleTableView.framework; sourceTree = "<group>"; };
 		6F089474174ED8E500AF3D7F /* Comic_Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Comic_Book.ttf; sourceTree = "<group>"; };
-		6F280B07173307DA00BDBDF8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		6F5BCAD618255B5400B77AFE /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
-		6F5BCAD718255B5400B77AFE /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
-		6F5FE05C1826B96800FA8647 /* SensibleTableView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SensibleTableView.framework; path = "Static Frameworks/SensibleTableView.framework"; sourceTree = "<group>"; };
 		6F5FE05E18273FBC00FA8647 /* battery-0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-0.png"; sourceTree = "<group>"; };
 		6F5FE05F18273FBC00FA8647 /* battery-25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-25.png"; sourceTree = "<group>"; };
 		6F5FE06018273FBC00FA8647 /* battery-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-50.png"; sourceTree = "<group>"; };
@@ -59,7 +83,7 @@
 		6F5FE06318273FBC00FA8647 /* battery-95.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "battery-95.png"; sourceTree = "<group>"; };
 		6F6A1183174DA127004465B5 /* ChartBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ChartBG.png; sourceTree = "<group>"; };
 		6F6A1184174DA127004465B5 /* ChartBG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ChartBG@2x.png"; sourceTree = "<group>"; };
-		6F7A9EF4171A1732004B1575 /* RoboRoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoboRoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F7A9EF4171A1732004B1575 /* BYB Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BYB Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F7A9EF9171A1732004B1575 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6F7A9EFB171A1732004B1575 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6F7A9EFF171A1732004B1575 /* RoboRoach-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RoboRoach-Info.plist"; sourceTree = "<group>"; };
@@ -83,13 +107,6 @@
 		6FC6B0EC1823408F001E798D /* BackbackHD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BackbackHD.png; sourceTree = "<group>"; };
 		6FC6B0F01823471C001E798D /* LED-Left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LED-Left.png"; sourceTree = "<group>"; };
 		6FC6B0F218235AAF001E798D /* roachHD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = roachHD.png; sourceTree = "<group>"; };
-		6FCADC1C1825DD7000C654B6 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		6FCADC1D1825DD7000C654B6 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
-		6FCADC341825DF2000C654B6 /* AppIcon29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon29x29.png; sourceTree = "<group>"; };
-		6FCADC351825DF2000C654B6 /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon29x29@2x.png"; sourceTree = "<group>"; };
-		6FCADC361825DF2000C654B6 /* AppIcon40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon40x40.png; sourceTree = "<group>"; };
-		6FCADC371825DF2000C654B6 /* AppIcon40x40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon40x40@2x.png"; sourceTree = "<group>"; };
-		6FCADC381825DF2000C654B6 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
 		6FFDD11A174EC03A001CDD9C /* BYBRoboRoach_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = BYBRoboRoach_iPhone.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,9 +115,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F280B08173307DA00BDBDF8 /* libz.dylib in Frameworks */,
-				6F5FE05D1826B96800FA8647 /* SensibleTableView.framework in Frameworks */,
-				6F5BCAD918255B5400B77AFE /* libTestFlight.a in Frameworks */,
+				1CF2F3CC1F3313B70051FD30 /* libz.tbd in Frameworks */,
+				245C99401B1F7BCD004286C8 /* SensibleTableView.framework in Frameworks */,
 				6F7A9F2E171A5CD3004B1575 /* CoreBluetooth.framework in Frameworks */,
 				6F7A9EFA171A1732004B1575 /* Foundation.framework in Frameworks */,
 				6FBAF568172442CF00C8E3D1 /* UIKit.framework in Frameworks */,
@@ -111,19 +127,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6F5BCAD518255B5400B77AFE /* TestFlight */ = {
-			isa = PBXGroup;
-			children = (
-				6F5BCAD618255B5400B77AFE /* libTestFlight.a */,
-				6F5BCAD718255B5400B77AFE /* TestFlight.h */,
-			);
-			name = TestFlight;
-			path = "Static Frameworks/TestFlight";
-			sourceTree = "<group>";
-		};
 		6F7A9EEB171A1732004B1575 = {
 			isa = PBXGroup;
 			children = (
+				240C440C1B2B1624009F456B /* Images.xcassets */,
 				6F7A9EFD171A1732004B1575 /* RoboRoach */,
 				6F7A9EF6171A1732004B1575 /* Frameworks */,
 				6F7A9EF5171A1732004B1575 /* Products */,
@@ -133,7 +140,7 @@
 		6F7A9EF5171A1732004B1575 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6F7A9EF4171A1732004B1575 /* RoboRoach.app */,
+				6F7A9EF4171A1732004B1575 /* BYB Remote.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -141,9 +148,8 @@
 		6F7A9EF6171A1732004B1575 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6F5FE05C1826B96800FA8647 /* SensibleTableView.framework */,
-				6F5BCAD518255B5400B77AFE /* TestFlight */,
-				6F280B07173307DA00BDBDF8 /* libz.dylib */,
+				1CF2F3CB1F3313B70051FD30 /* libz.tbd */,
+				245C993F1B1F7BCD004286C8 /* SensibleTableView.framework */,
 				6FBAF5661724428F00C8E3D1 /* UIKit.framework */,
 				6F7A9F2D171A5CD3004B1575 /* CoreBluetooth.framework */,
 				6F7A9EF9171A1732004B1575 /* Foundation.framework */,
@@ -178,19 +184,28 @@
 		6F938D331720D1950084E06A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				240C44201B2B28E0009F456B /* splash480.png */,
+				240C44211B2B28E0009F456B /* splash960.png */,
+				240C44221B2B28E0009F456B /* splash1136.png */,
+				240C44231B2B28E0009F456B /* splash1334.png */,
+				240C44241B2B28E0009F456B /* splash2208.png */,
+				240C440E1B2B1C0D009F456B /* icon40.png */,
+				240C440F1B2B1C0D009F456B /* icon40@2x.png */,
+				240C44101B2B1C0D009F456B /* icon57.png */,
+				240C44111B2B1C0D009F456B /* icon57@2x.png */,
+				240C44121B2B1C0D009F456B /* icon60.png */,
+				240C44131B2B1C0D009F456B /* icon60@2x.png */,
+				240C44141B2B1C0D009F456B /* icon60@3x.png */,
+				240C44151B2B1C0D009F456B /* icons29.png */,
+				240C44161B2B1C0D009F456B /* icons29@2x.png */,
+				240C44081B2B1126009F456B /* connectedbybremote.png */,
+				240C44091B2B1126009F456B /* notconnectedbybremote.png */,
 				6F5FE05E18273FBC00FA8647 /* battery-0.png */,
 				6F5FE05F18273FBC00FA8647 /* battery-25.png */,
 				6F5FE06018273FBC00FA8647 /* battery-50.png */,
 				6F5FE06118273FBC00FA8647 /* battery-80.png */,
 				6F5FE06218273FBC00FA8647 /* battery-90.png */,
 				6F5FE06318273FBC00FA8647 /* battery-95.png */,
-				6FCADC341825DF2000C654B6 /* AppIcon29x29.png */,
-				6FCADC351825DF2000C654B6 /* AppIcon29x29@2x.png */,
-				6FCADC361825DF2000C654B6 /* AppIcon40x40.png */,
-				6FCADC371825DF2000C654B6 /* AppIcon40x40@2x.png */,
-				6FCADC381825DF2000C654B6 /* AppIcon60x60@2x.png */,
-				6FCADC1C1825DD7000C654B6 /* Icon.png */,
-				6FCADC1D1825DD7000C654B6 /* Icon@2x.png */,
 				6FC6B0F218235AAF001E798D /* roachHD.png */,
 				6FC6B0F01823471C001E798D /* LED-Left.png */,
 				6FC6B0EC1823408F001E798D /* BackbackHD.png */,
@@ -214,9 +229,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6F7A9EF3171A1732004B1575 /* RoboRoach */ = {
+		6F7A9EF3171A1732004B1575 /* BYB Remote */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6F7A9F1A171A1732004B1575 /* Build configuration list for PBXNativeTarget "RoboRoach" */;
+			buildConfigurationList = 6F7A9F1A171A1732004B1575 /* Build configuration list for PBXNativeTarget "BYB Remote" */;
 			buildPhases = (
 				6F7A9EF0171A1732004B1575 /* Sources */,
 				6F7A9EF1171A1732004B1575 /* Frameworks */,
@@ -226,9 +241,9 @@
 			);
 			dependencies = (
 			);
-			name = RoboRoach;
+			name = "BYB Remote";
 			productName = RoboRoach;
-			productReference = 6F7A9EF4171A1732004B1575 /* RoboRoach.app */;
+			productReference = 6F7A9EF4171A1732004B1575 /* BYB Remote.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -243,6 +258,7 @@
 				TargetAttributes = {
 					6F7A9EF3171A1732004B1575 = {
 						DevelopmentTeam = MLGRKD657P;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -258,7 +274,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6F7A9EF3171A1732004B1575 /* RoboRoach */,
+				6F7A9EF3171A1732004B1575 /* BYB Remote */,
 			);
 		};
 /* End PBXProject section */
@@ -270,26 +286,36 @@
 			files = (
 				6F5FE06818273FBC00FA8647 /* battery-90.png in Resources */,
 				6F089475174EDEA600AF3D7F /* Comic_Book.ttf in Resources */,
-				6FCADC1F1825DD7000C654B6 /* Icon@2x.png in Resources */,
+				240C440D1B2B1624009F456B /* Images.xcassets in Resources */,
 				6F5FE06618273FBC00FA8647 /* battery-50.png in Resources */,
-				6FCADC3D1825DF2000C654B6 /* AppIcon60x60@2x.png in Resources */,
+				240C44261B2B28E0009F456B /* splash960.png in Resources */,
 				6F86CCBA17EFC83600C5CC07 /* Default-568h@2x~iphone.png in Resources */,
+				240C441C1B2B1C0D009F456B /* icon60@2x.png in Resources */,
+				240C440B1B2B1127009F456B /* notconnectedbybremote.png in Resources */,
 				6F6A118A174DA127004465B5 /* ChartBG.png in Resources */,
+				240C44271B2B28E0009F456B /* splash1136.png in Resources */,
+				240C441D1B2B1C0D009F456B /* icon60@3x.png in Resources */,
 				6F5FE06718273FBC00FA8647 /* battery-80.png in Resources */,
 				6F6A118B174DA127004465B5 /* ChartBG@2x.png in Resources */,
+				240C441A1B2B1C0D009F456B /* icon57@2x.png in Resources */,
+				240C441E1B2B1C0D009F456B /* icons29.png in Resources */,
 				6FFDD11B174EC03A001CDD9C /* BYBRoboRoach_iPhone.storyboard in Resources */,
 				6F86CCBB17EFC83600C5CC07 /* Default@2x~iphone.png in Resources */,
-				6FCADC3B1825DF2000C654B6 /* AppIcon40x40.png in Resources */,
+				240C441B1B2B1C0D009F456B /* icon60.png in Resources */,
 				6F5FE06918273FBC00FA8647 /* battery-95.png in Resources */,
+				240C440A1B2B1127009F456B /* connectedbybremote.png in Resources */,
+				240C441F1B2B1C0D009F456B /* icons29@2x.png in Resources */,
 				6F86CCBC17EFC83600C5CC07 /* Default~iphone.png in Resources */,
+				240C44191B2B1C0D009F456B /* icon57.png in Resources */,
+				240C44281B2B28E0009F456B /* splash1334.png in Resources */,
+				240C44171B2B1C0D009F456B /* icon40.png in Resources */,
+				240C44251B2B28E0009F456B /* splash480.png in Resources */,
+				240C44181B2B1C0D009F456B /* icon40@2x.png in Resources */,
 				6FC6B0F318235AAF001E798D /* roachHD.png in Resources */,
-				6FCADC3C1825DF2000C654B6 /* AppIcon40x40@2x.png in Resources */,
-				6FCADC1E1825DD7000C654B6 /* Icon.png in Resources */,
 				6F5FE06518273FBC00FA8647 /* battery-25.png in Resources */,
-				6FCADC3A1825DF2000C654B6 /* AppIcon29x29@2x.png in Resources */,
 				6F5FE06418273FBC00FA8647 /* battery-0.png in Resources */,
+				240C44291B2B28E0009F456B /* splash2208.png in Resources */,
 				6FC6B0F11823471C001E798D /* LED-Left.png in Resources */,
-				6FCADC391825DF2000C654B6 /* AppIcon29x29.png in Resources */,
 				6FC6B0ED1823408F001E798D /* BackbackHD.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,12 +401,19 @@
 		6F7A9F1B171A1732004B1575 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = MLGRKD657P;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Static\\\\\\ Frameworks\\\\",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks",
+					/Users/gagegreg/Dropbox/Backyard,
+					Brains/Code/RoboRoach/Software/iOS/Static,
+					Frameworks,
+					"$(PROJECT_DIR)",
 				);
 				"FRAMEWORK_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
@@ -390,15 +423,14 @@
 				GCC_PREFIX_HEADER = "RoboRoach/RoboRoach-Prefix.pch";
 				INFOPLIST_FILE = "RoboRoach/RoboRoach-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks/TestFlight",
-				);
+				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -406,12 +438,19 @@
 		6F7A9F1C171A1732004B1575 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = MLGRKD657P;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Static\\\\\\ Frameworks",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks",
+					/Users/gagegreg/Dropbox/Backyard,
+					Brains/Code/RoboRoach/Software/iOS/Static,
+					Frameworks,
+					"$(PROJECT_DIR)",
 				);
 				"FRAMEWORK_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
@@ -421,16 +460,14 @@
 				GCC_PREFIX_HEADER = "RoboRoach/RoboRoach-Prefix.pch";
 				INFOPLIST_FILE = "RoboRoach/RoboRoach-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks",
-					"/Users/gagegreg/Dropbox/Backyard\\ Brains/Code/RoboRoach/Software/iOS/Static\\ Frameworks/TestFlight",
-				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9DF592A3-0175-4311-9BA6-31E9A6B65AC7";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "22e5f549-6433-4257-bd8d-1a6376aa1261";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -447,7 +484,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6F7A9F1A171A1732004B1575 /* Build configuration list for PBXNativeTarget "RoboRoach" */ = {
+		6F7A9F1A171A1732004B1575 /* Build configuration list for PBXNativeTarget "BYB Remote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6F7A9F1B171A1732004B1575 /* Debug */,
