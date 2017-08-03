@@ -249,18 +249,31 @@ id <BYBRoboRoachManagerDelegate> delegate;
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI {
     NSLog(@"[CM] didDiscoverPeripheral");
     NSLog(@"RoboRoach Ad data :\n%@",advertisementData);
-
-    
-    
-    
-    if ([peripheral.name rangeOfString:@"RoboRoach"].location != NSNotFound) {
-        NSLog(@"Found RoboRoach!...\n");
-        //[self connectPeripheral:peripheral];
-        if (!self.peripherals) self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
-    } else {
-        NSLog(@"Peripheral not a RoboRoach or callback was not because of a ScanResponse\n");
+    if(peripheral.name != nil)
+    {
+        if ([peripheral.name rangeOfString:@"RoboRoach"].location != NSNotFound || [peripheral.name rangeOfString:@"RoboHuman"].location != NSNotFound) {
+            NSLog(@"Found RoboRoach/RoboHuman...\n");
+            NSLog(@"Signal strength: %ld\n",[RSSI longValue]);
+            if([RSSI longValue]>maximumSignalStrength)
+            {
+                maximumSignalStrength = [RSSI longValue];
+                
+                self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
+                
+            }
+            else
+            {
+                NSLog(@"Avoid connecting to BT device since we have already found device that has greateer signal strength\n");
+            }
+            //[self connectPeripheral:peripheral];
+        } else {
+            NSLog(@"Peripheral not a RoboRoach nor RoboHuman or callback was not because of a ScanResponse\n");
+        }
     }
-
+    else
+    {
+        NSLog(@"Periferal name is nil");
+    }
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
