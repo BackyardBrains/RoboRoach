@@ -1,38 +1,31 @@
 package com.backyardbrains.roboroach;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.SeekBar;
-import 	android.widget.ViewFlipper;
-import android.view.ViewGroup;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-import java.util.List;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 
 public class RoboRoachActivity extends Activity implements RoboRoachManagerCallbacks {
@@ -58,7 +51,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
     Runnable scanTimeout = new Runnable() {
         @Override
         public void run() {
-            if(mRoboRoachManager == null) return;
+            if (mRoboRoachManager == null) return;
             mScanning = false;
             mRoboRoachManager.stopScanning();
             invalidateOptionsMenu();
@@ -76,7 +69,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         mRoboRoachManager = new RoboRoachManager(this, this);
 
         // check if we have BT and BLE on board
-        if(mRoboRoachManager.checkBleHardwareAvailable() == false) {
+        if (mRoboRoachManager.checkBleHardwareAvailable() == false) {
             bleMissing();
         }
 
@@ -87,7 +80,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         viewHolder.goRightText = (TextView) findViewById(R.id.textGoRight);
         viewHolder.configText = (TextView) findViewById(R.id.textConfig);
         viewHolder.Duration = (SeekBar) findViewById(R.id.sbDuration);
-        viewHolder.Gain  = (SeekBar) findViewById(R.id.sbGain);
+        viewHolder.Gain = (SeekBar) findViewById(R.id.sbGain);
         viewHolder.Frequecy = (SeekBar) findViewById(R.id.sbFrequency);
         viewHolder.PulseWidth = (SeekBar) findViewById(R.id.sbPulseWidth);
         viewHolder.RandomMode = (Switch) findViewById(R.id.swRandomMode);
@@ -103,23 +96,23 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
             }
+
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
 
                 mGATTFreq = seekBar.getProgress();
-                if ( mGATTFreq < 1 ) mGATTFreq = 1;
+                if (mGATTFreq < 1) mGATTFreq = 1;
 
                 //If the new freq it's greater than 1/2 the
-                if ((float) mRoboRoachManager.getRoboRoachPulseWidth() > (float)500/mGATTFreq )
-                {
+                if ((float) mRoboRoachManager.getRoboRoachPulseWidth() > (float) 500 / mGATTFreq) {
                     mGATTUpdate = new Runnable() {
                         @Override
                         public void run() {
 
-                            float newFreq  = (float) (1000/mGATTFreq);
-                            int newPW = (int)  newFreq/2;
+                            float newFreq = (float) (1000 / mGATTFreq);
+                            int newPW = (int) newFreq / 2;
                             mRoboRoachManager.updatePulseWidth(newPW);
                             viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
 
@@ -140,40 +133,42 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
             }
+
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
 
-                float roundedGain = Math.round((float)seekBar.getProgress()/ 5.0f) * 5.0f;
-                mRoboRoachManager.updateGain( (int) roundedGain );
+                float roundedGain = Math.round((float) seekBar.getProgress() / 5.0f) * 5.0f;
+                mRoboRoachManager.updateGain((int) roundedGain);
                 viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
             }
         });
 
         viewHolder.RandomMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if ( mRoboRoachManager.isConnected()) {
+                if (mRoboRoachManager.isConnected()) {
 
                     mRoboRoachManager.updateRandomMode(isChecked);
                     viewHolder.PulseWidth.setEnabled(!viewHolder.RandomMode.isChecked());
                     viewHolder.Frequecy.setEnabled(!viewHolder.RandomMode.isChecked());
-                    viewHolder.configText.setText( mRoboRoachManager.getRoboRoachConfigurationString());
+                    viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
                 }
             }
         });
-         
+
         viewHolder.PulseWidth.setMax(50);
         viewHolder.PulseWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
             }
+
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mRoboRoachManager.updatePulseWidth(seekBar.getProgress());
-                viewHolder.configText.setText( mRoboRoachManager.getRoboRoachConfigurationString());
+                viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
             }
         });
 
@@ -196,7 +191,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             }
         });
 
-        Typeface typeFace=Typeface.createFromAsset(getAssets(),"fonts/comicbook.ttf");
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/comicbook.ttf");
         viewHolder.goLeftText.setTypeface(typeFace);
         viewHolder.goRightText.setTypeface(typeFace);
         viewHolder.configText.setTypeface(typeFace);
@@ -210,17 +205,15 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
                 mRoboRoachManager.updateFrequency(viewHolder.Frequecy.getProgress());
 
 
-
                 // Perform action on click
-                ViewFlipper vf = (ViewFlipper) findViewById( R.id.viewFlipper );
+                ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper);
                 vf.showNext();
                 mOnSettingsScreen = false;
             }
         });
 
 
-
-        gestureDetector = new GestureDetector( this.getBaseContext(),
+        gestureDetector = new GestureDetector(this.getBaseContext(),
                 new SwipeGestureDetector());
 
         if (savedInstanceState == null) {
@@ -244,32 +237,34 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         //}
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume()");
 
         // on every Resume check if BT is enabled (user could turn it off while app was in background etc.)
-        if(mRoboRoachManager.isBtEnabled() == false) {
+        if (mRoboRoachManager.isBtEnabled() == false) {
             // BT is not turned on - ask user to make it enabled
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_ID);
             // see onActivityResult to check what is the status of our request
         }
 
-        if(!mRoboRoachManager.initialize()) {
+        if (!mRoboRoachManager.initialize()) {
             finish();
         }
         invalidateOptionsMenu();
 
-    };
+    }
+
+    ;
 
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause()");
-
 
 
         if (mRoboRoachManager.isConnected()) {
@@ -290,21 +285,22 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
 
         invalidateOptionsMenu();
 
-    };
+    }
+
+    ;
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        if (mRoboRoachManager.isConnected()){
+        if (mRoboRoachManager.isConnected()) {
             menu.findItem(R.id.menu_stop).setVisible(false);
             menu.findItem(R.id.menu_scan).setVisible(false);
             menu.findItem(R.id.menu_refresh).setActionView(null);
             menu.findItem(R.id.menu_disconnect).setVisible(true);
             menu.findItem(R.id.menu_settings).setVisible(true);
 
-        }
-        else{
+        } else {
             menu.findItem(R.id.menu_disconnect).setVisible(false);
             menu.findItem(R.id.menu_settings).setVisible(false);
 
@@ -344,19 +340,19 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
                         mRoboRoachManager.disconnect();
                         mRoboRoachManager.close();
                         if (mOnSettingsScreen) {
-                            ViewFlipper vf = (ViewFlipper) findViewById( R.id.viewFlipper );
+                            ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper);
                             vf.showNext();
                             mOnSettingsScreen = false;
                         }
-                            invalidateOptionsMenu();
+                        invalidateOptionsMenu();
                     }
                 });
                 break;
             case R.id.menu_settings:
                 if (!mOnSettingsScreen) {
-                ViewFlipper vf = (ViewFlipper) findViewById( R.id.viewFlipper );
-                vf.showNext();
-                mOnSettingsScreen = true;
+                    ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper);
+                    vf.showNext();
+                    mOnSettingsScreen = true;
                 }
                 break;
 
@@ -374,15 +370,14 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_roboroach_main, container, false);
             return rootView;
         }
     }
 
     public void uiDeviceConnected(final BluetoothGatt gatt,
-                                  final BluetoothDevice device)
-    {
+                                  final BluetoothDevice device) {
         Log.d(TAG, "uiDeviceConnected()");
         runOnUiThread(new Runnable() {
             @Override
@@ -396,8 +391,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
     }
 
     public void uiDeviceDisconnected(final BluetoothGatt gatt,
-                                     final BluetoothDevice device)
-    {
+                                     final BluetoothDevice device) {
         Log.d(TAG, "uiDeviceDisconnected()");
         runOnUiThread(new Runnable() {
             @Override
@@ -423,7 +417,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             @Override
             public void run() {
 
-                viewHolder.configText.setText( mRoboRoachManager.getRoboRoachConfigurationString());
+                viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
                 viewHolder.backpackImage.setImageAlpha(255);
                 viewHolder.backpackImage.setVisibility(View.VISIBLE);
 
@@ -431,7 +425,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
                 viewHolder.Gain.setProgress(mRoboRoachManager.getRoboRoachGain());
                 viewHolder.PulseWidth.setProgress(mRoboRoachManager.getRoboRoachPulseWidth());
                 viewHolder.Duration.setProgress(mRoboRoachManager.getRoboRoachDuration());
-                viewHolder.RandomMode.setChecked( mRoboRoachManager.getRoboRoachRandomMode());
+                viewHolder.RandomMode.setChecked(mRoboRoachManager.getRoboRoachRandomMode());
 
                 viewHolder.PulseWidth.setEnabled(!viewHolder.RandomMode.isChecked());
                 viewHolder.Frequecy.setEnabled(!viewHolder.RandomMode.isChecked());
@@ -445,14 +439,13 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
     public void uiDeviceFound(BluetoothDevice device, int rssi, byte[] record) {
         Log.d(TAG, "uiDeviceFound()");
 
-        if(mHandler!=null){
+        if (mHandler != null) {
             mHandler.removeCallbacks(scanTimeout);
         }
 
+        if (device == null || device.getAddress() == null || device.getName() == null) return;
+
         mDeviceAddress = device.getAddress();
-
-
-        if (device == null) return;
 
         if (device.getName().equals("RoboRoach")) {
 
@@ -482,7 +475,6 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             });
 
 
-
         } else {
 
             Log.d(TAG, "uiDeviceFound() ... Found a non-RoboRoach :( !");
@@ -502,7 +494,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         SeekBar Duration;
         SeekBar PulseWidth;
         SeekBar Gain;
-        Switch  RandomMode;
+        Switch RandomMode;
 
     }
 
@@ -519,7 +511,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         // Do something
         Log.d(TAG, "onLeftSwipe()");
         if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
-            if(!mTurning) mRoboRoachManager.turnLeft();
+            if (!mTurning) mRoboRoachManager.turnLeft();
         }
     }
 
@@ -527,7 +519,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         // Do something
         Log.d(TAG, "onRightSwipe()");
         if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
-            if(!mTurning) mRoboRoachManager.turnRight();
+            if (!mTurning) mRoboRoachManager.turnRight();
         }
 
     }
@@ -561,7 +553,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
 
     /* make sure that potential scanning will take no longer
  * than <SCANNING_TIMEOUT> seconds from now on */
-    private void addTurnCommandTimeout( int timeoutInMS ) {
+    private void addTurnCommandTimeout(int timeoutInMS) {
         Runnable timeout = new Runnable() {
             @Override
             public void run() {
@@ -586,7 +578,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // user didn't want to turn on BT
         if (requestCode == ENABLE_BT_REQUEST_ID) {
-            if(resultCode == Activity.RESULT_CANCELED) {
+            if (resultCode == Activity.RESULT_CANCELED) {
                 btDisabled();
                 return;
             }
