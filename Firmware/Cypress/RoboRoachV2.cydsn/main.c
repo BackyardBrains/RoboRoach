@@ -20,6 +20,7 @@ int connectionStatus = 0;
 int initial; 
 int ledConnectionCounter = 0;
 uint8 batteryLevel = 70;
+int16 batteryMeasurement = 0;
 int batteryTimer = 0;
 #define BATTERY_TIMER_PERIOD 3000
 int sendBatteryLevel = 1;
@@ -353,6 +354,10 @@ int main(void)
     DurationTimer_WriteCounter(0);
     DurationTimer_Start();
     mainTimerInterrupt_StartEx(mainTimerInterruptHandler); 
+    
+    ADCForBattery_Start();
+    
+    
     //initalize parameters to defaults
     for(;;)
     {
@@ -376,6 +381,15 @@ int main(void)
       
         if(sendBatteryLevel==1)
         {
+            ADCForBattery_StartConvert();
+            ADCForBattery_IsEndConversion(ADCForBattery_WAIT_FOR_RESULT);
+            batteryMeasurement = ADCForBattery_GetResult16(0x00u);
+            batteryLevel = batteryMeasurement/20;
+            if(batteryLevel>100)
+            {
+                batteryLevel = 100;
+            }
+           
             sendBatteryLevel = 0;        
             apiResult = CyBle_BassSendNotification(connectionHandle, CYBLE_BATTERY_SERVICE_INDEX, 
                 CYBLE_BAS_BATTERY_LEVEL, sizeof(batteryLevel), &batteryLevel);
@@ -407,11 +421,11 @@ int main(void)
                 sendBatteryLevel = 0; 
             }
                  
-           batteryLevel = batteryLevel+10;
+           /*batteryLevel = batteryLevel+10;
            if(batteryLevel>100)
            {
                 batteryLevel = 0;
-           }
+           }*/
         }
         //go to sleep if idle
         if(gotoSleep) {         

@@ -51,7 +51,7 @@
       <Data key="5893c176-0969-43d8-808d-f45ba92a1038" value="LT" />
       <Data key="8928b51e-4038-4b37-b235-399fe0f2658c" value="Blue" />
       <Data key="503920b1-03d0-4ae3-b942-20eaa2cd69bb" value="SS" />
-      <Data key="77715107-f8d5-47e5-a629-0fb83101ac6b" value="Right" />
+      <Data key="77715107-f8d5-47e5-a629-0fb83101ac6b" value="ADC_IN_P3_0" />
       <Data key="b9d95874-35ea-4539-bccb-c0502c39f7a4" value="CLCK" />
       <Data key="ba2f4723-2688-4f7a-85c9-2c5951b973b1" value="CS" />
       <Data key="bfb1b265-d2da-4d1e-a5e8-378b4b36cb43" value="SS" />
@@ -3870,7 +3870,7 @@
     </Group>
     <Group key="77715107-f8d5-47e5-a629-0fb83101ac6b">
       <Group key="0">
-        <Data key="Port Format" value="3,4" />
+        <Data key="Port Format" value="3,0" />
       </Group>
     </Group>
     <Group key="b9d95874-35ea-4539-bccb-c0502c39f7a4">
