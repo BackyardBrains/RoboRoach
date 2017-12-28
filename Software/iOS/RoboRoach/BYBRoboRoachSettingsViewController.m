@@ -65,7 +65,7 @@ SCTextFieldCell *hardwareCell;
     
     
     freqSlider = [SCSliderCell cellWithText:@"Frequency" boundObject:self.roboRoach boundPropertyName:@"frequency"  ];
-    freqSlider.slider.minimumValue = 1;
+    freqSlider.slider.minimumValue = 4;
     freqSlider.slider.maximumValue = 150;
     [stimulationSection addCell:freqSlider];
     
@@ -233,10 +233,12 @@ SCTextFieldCell *hardwareCell;
 }
 
 
-
+//
+// Update constrains of slider bars
+// Currently pulse width is one byte so we can represent maximaly pulse width less than 256
+//
+//
 - (void) updateSettingConstraints {
-    
-    
     
     float roundedGain = round([self.roboRoach.gain floatValue]/ 5.0f) * 5.0f;
     self.roboRoach.gain = [NSNumber numberWithFloat:roundedGain];
