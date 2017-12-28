@@ -139,7 +139,7 @@ SCTextFieldCell *hardwareCell;
     //NSLog(@"self.roboRoach.numberOfPulses: %@", self.roboRoach.numberOfPulses);
     
     float pw = [self.roboRoach.pulseWidth floatValue]/1000;
-    float period = 1/[self.roboRoach.frequency floatValue];
+    float period = 1.0f/[self.roboRoach.frequency floatValue];
     //NSLog(@"pw: %f", pw);
     //NSLog(@"period: %f", period);
     
@@ -164,14 +164,39 @@ SCTextFieldCell *hardwareCell;
         CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
         
         //Go Over
-        x += pw*POINTS_TO_SEC;
-        CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
+        
+        if((x+pw*POINTS_TO_SEC)>POINTS_TO_SEC*[self.roboRoach.duration floatValue]/1000)
+        {
+            x = POINTS_TO_SEC*[self.roboRoach.duration floatValue]/1000;
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+            break;
+        }
+        else
+        {
+            x += pw*POINTS_TO_SEC;
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE - ((STIMLINE_BASE - STIMLINE_PEAK) * gain));
+        }
+        
         
         //Go Down
-        CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+        
         //Go to end
-        x += (period - pw)*POINTS_TO_SEC;
-        CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+        if((x+(period - pw)*POINTS_TO_SEC)>POINTS_TO_SEC*[self.roboRoach.duration floatValue]/1000)
+        {
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+            x = POINTS_TO_SEC*[self.roboRoach.duration floatValue]/1000;
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+            break;
+        }
+        else
+        {
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+            x += (period - pw)*POINTS_TO_SEC;
+            CGContextAddLineToPoint(context, x, STIMLINE_BASE);
+        }
+        
+        
         
         //NSLog(@"Line: [%f.%f]", (i * period)*POINTS_TO_SEC + pw*POINTS_TO_SEC, STIMLINE_PEAK);
         
@@ -245,14 +270,14 @@ SCTextFieldCell *hardwareCell;
 
     
     
-    if ([self.roboRoach.pulseWidth doubleValue] > 1000/[self.roboRoach.frequency doubleValue])
+    if ([self.roboRoach.pulseWidth doubleValue] > 1000.0/[self.roboRoach.frequency doubleValue])
     {
         
-        self.roboRoach.pulseWidth = [NSNumber numberWithDouble:(1000/[self.roboRoach.frequency doubleValue])/2];
+        self.roboRoach.pulseWidth = [NSNumber numberWithDouble:(1000.0/[self.roboRoach.frequency doubleValue])];
         
     }
     pulseWidthSlider.slider.minimumValue = 1;
-    pulseWidthSlider.slider.maximumValue = 1000/[self.roboRoach.frequency doubleValue];
+    pulseWidthSlider.slider.maximumValue = 1000.0/[self.roboRoach.frequency doubleValue];
     
 
     //NSLog(@"pulseWidthSlider.slider.maximumValue: %f", pulseWidthSlider.slider.maximumValue);

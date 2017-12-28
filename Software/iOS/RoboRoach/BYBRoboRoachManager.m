@@ -9,6 +9,10 @@
 #import "BYBRoboRoachManager.h"
 
 @implementation BYBRoboRoachManager
+{
+    bool firstTimeNotificationEnable;
+    
+}
 
 // delegate bookkeeping
 id <BYBRoboRoachManagerDelegate> delegate;
@@ -63,7 +67,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
     self.activeRoboRoach = roboRoach;
     [self connectPeripheral:self.activeRoboRoach.peripheral];
     
-    
+    firstTimeNotificationEnable = YES;
     //[self getAllServicesFromRoboRoach:self.activeRoboRoach.peripheral];
     return 0;
 }
@@ -238,6 +242,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
    // self.activePeripheral = peripheral;
     [peripheral discoverServices:nil];
     [central stopScan];
+    
 }
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
@@ -293,7 +298,15 @@ id <BYBRoboRoachManagerDelegate> delegate;
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     UInt16 characteristicUUID = [self CBUUIDToInt:characteristic.UUID];
+    NSLog(@"DID UPDATE VALUE FOR CHARACTERISTIC");
+    
     if (!error) {
+        
+        if(firstTimeNotificationEnable)
+        {
+            firstTimeNotificationEnable = NO;
+            [self notification:BATTERY_SERVICE_UUID characteristicUUID:BATTERY_CHAR_BATTERYLEVEL_UUID on:YES];
+        }
         switch(characteristicUUID){
             case BYB_ROBOROACH_CHAR_FREQUENCY_UUID:
             {
@@ -342,6 +355,7 @@ id <BYBRoboRoachManagerDelegate> delegate;
                 char value;
                 [characteristic.value getBytes:&value length:1];
                 self.activeRoboRoach.batteryLevel = [NSNumber numberWithInt:(int)value];
+                [[self delegate] didFinsihReadingRoboRoachValues];
                 break;
             }
             case DEVICE_INFO_CHAR_FIRMWARE_UUID:
