@@ -14,15 +14,17 @@
 
 
 //connection variables
-#define LED_CONNECTION_PULSE_LENGTH 100
-#define LED_CONNECTION_PERIOD 1000
+#define LED_CONNECTION_PULSE_LENGTH 1000
+#define LED_CONNECTION_PERIOD 10000
+
+#define ONE_SECOND_IN_TIMER_PULSES 10000
 int connectionStatus = 0;
 int initial; 
 int ledConnectionCounter = 0;
 uint8 batteryLevel = 70;
 int16 batteryMeasurement = 0;
 int batteryTimer = 0;
-#define BATTERY_TIMER_PERIOD 3000
+#define BATTERY_TIMER_PERIOD 30000
 int sendBatteryLevel = 1;
 CYBLE_API_RESULT_T apiResult;
 
@@ -44,10 +46,13 @@ uint8 gotoSleep;
 
 
 uint32 stimPeriodCounter = 0;
+uint32 stimDurationMax = 0;
 uint32 stimLengthCounter = 0;
 uint32 stimPeriodMax = 0;
+uint32 stimPulseONMax = 0;
 int direction = Left;
 int stimulationActive = 0; 
+
 void startStimulus(enum Direction dir)
 {
     stimulationActive = 0;
@@ -55,8 +60,10 @@ void startStimulus(enum Direction dir)
     {
         StimulusGenerator_Randomize(&generator);
     }
-    stimPeriodMax = 1000/generator.pulseFrequency;
+    stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
     stimPeriodCounter = 0;
+    stimDurationMax = (ONE_SECOND_IN_TIMER_PULSES/1000)*generator.pulseDuration;
+    stimPulseONMax = (ONE_SECOND_IN_TIMER_PULSES/1000)*generator.pulseWidth;
     
     Left_Write(0);
     Right_Write(0);
@@ -239,7 +246,7 @@ CY_ISR(Sleep_interrupt) {
   int test = 0;
 CY_ISR(mainTimerInterruptHandler)
 {
-    DurationTimer_WriteCounter(0);
+    //DurationTimer_WriteCounter(0);
     DurationTimer_ClearInterrupt(DurationTimer_INTR_MASK_CC_MATCH);
 
 
@@ -269,7 +276,7 @@ CY_ISR(mainTimerInterruptHandler)
     if(stimulationActive==1)
     {
         stimLengthCounter++;
-        if(stimLengthCounter>generator.pulseDuration)//end of stimulation
+        if(stimLengthCounter>stimDurationMax)//end of stimulation
         {
             //turn off all outputs used for stimulation
             stimulationActive = 0;
@@ -281,7 +288,7 @@ CY_ISR(mainTimerInterruptHandler)
         else
         {
             stimPeriodCounter++;
-            if(stimPeriodCounter<=generator.pulseWidth)
+            if(stimPeriodCounter<=stimPulseONMax)
             {
             //Inside ON part of period
                 if(direction==Left)
@@ -315,7 +322,10 @@ CY_ISR(mainTimerInterruptHandler)
                     if(generator.randomMode!=0)
                     {
                         StimulusGenerator_Randomize(&generator);
-                        stimPeriodMax = 1000/generator.pulseFrequency;
+                        stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
+                        
+                        stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
+                        stimPulseONMax = (ONE_SECOND_IN_TIMER_PULSES/1000)*generator.pulseWidth;
                     }
                 }
             }
