@@ -65,6 +65,8 @@ SCTextFieldCell *hardwareCell;
     
     
     freqSlider = [SCSliderCell cellWithText:@"Frequency" boundObject:self.roboRoach boundPropertyName:@"frequency"  ];
+    //Currently pulse width is one byte so we can represent maximaly pulse width less than 256
+    //that is why we limit minimum frequency to 4Hz so that we never need more than 250ms pulse width
     freqSlider.slider.minimumValue = 4;
     freqSlider.slider.maximumValue = 150;
     [stimulationSection addCell:freqSlider];
@@ -235,7 +237,7 @@ SCTextFieldCell *hardwareCell;
 
 //
 // Update constrains of slider bars
-// Currently pulse width is one byte so we can represent maximaly pulse width less than 256
+//
 //
 //
 - (void) updateSettingConstraints {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1CC513201FF5756A00DD61E4 /* iconBYBremote1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CC5131F1FF5756A00DD61E4 /* iconBYBremote1024.png */; };
+		1CC513221FF694C400DD61E4 /* icon29@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CC513211FF694C400DD61E4 /* icon29@3x.png */; };
+		1CC513241FF6953900DD61E4 /* icon40@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CC513231FF6953900DD61E4 /* icon40@3x.png */; };
 		1CF2F3CC1F3313B70051FD30 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CF2F3CB1F3313B70051FD30 /* libz.tbd */; };
 		240C440A1B2B1127009F456B /* connectedbybremote.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44081B2B1126009F456B /* connectedbybremote.png */; };
 		240C440B1B2B1127009F456B /* notconnectedbybremote.png in Resources */ = {isa = PBXBuildFile; fileRef = 240C44091B2B1126009F456B /* notconnectedbybremote.png */; };
@@ -55,6 +58,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1CC5131F1FF5756A00DD61E4 /* iconBYBremote1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconBYBremote1024.png; sourceTree = "<group>"; };
+		1CC513211FF694C400DD61E4 /* icon29@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon29@3x.png"; sourceTree = "<group>"; };
+		1CC513231FF6953900DD61E4 /* icon40@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon40@3x.png"; sourceTree = "<group>"; };
 		1CF2F3CB1F3313B70051FD30 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		240C44081B2B1126009F456B /* connectedbybremote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connectedbybremote.png; sourceTree = "<group>"; };
 		240C44091B2B1126009F456B /* notconnectedbybremote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notconnectedbybremote.png; sourceTree = "<group>"; };
@@ -184,6 +190,7 @@
 		6F938D331720D1950084E06A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1CC5131F1FF5756A00DD61E4 /* iconBYBremote1024.png */,
 				240C44201B2B28E0009F456B /* splash480.png */,
 				240C44211B2B28E0009F456B /* splash960.png */,
 				240C44221B2B28E0009F456B /* splash1136.png */,
@@ -191,6 +198,7 @@
 				240C44241B2B28E0009F456B /* splash2208.png */,
 				240C440E1B2B1C0D009F456B /* icon40.png */,
 				240C440F1B2B1C0D009F456B /* icon40@2x.png */,
+				1CC513231FF6953900DD61E4 /* icon40@3x.png */,
 				240C44101B2B1C0D009F456B /* icon57.png */,
 				240C44111B2B1C0D009F456B /* icon57@2x.png */,
 				240C44121B2B1C0D009F456B /* icon60.png */,
@@ -198,6 +206,7 @@
 				240C44141B2B1C0D009F456B /* icon60@3x.png */,
 				240C44151B2B1C0D009F456B /* icons29.png */,
 				240C44161B2B1C0D009F456B /* icons29@2x.png */,
+				1CC513211FF694C400DD61E4 /* icon29@3x.png */,
 				240C44081B2B1126009F456B /* connectedbybremote.png */,
 				240C44091B2B1126009F456B /* notconnectedbybremote.png */,
 				6F5FE05E18273FBC00FA8647 /* battery-0.png */,
@@ -287,13 +296,16 @@
 				6F5FE06818273FBC00FA8647 /* battery-90.png in Resources */,
 				6F089475174EDEA600AF3D7F /* Comic_Book.ttf in Resources */,
 				240C440D1B2B1624009F456B /* Images.xcassets in Resources */,
+				1CC513221FF694C400DD61E4 /* icon29@3x.png in Resources */,
 				6F5FE06618273FBC00FA8647 /* battery-50.png in Resources */,
 				240C44261B2B28E0009F456B /* splash960.png in Resources */,
 				6F86CCBA17EFC83600C5CC07 /* Default-568h@2x~iphone.png in Resources */,
 				240C441C1B2B1C0D009F456B /* icon60@2x.png in Resources */,
+				1CC513201FF5756A00DD61E4 /* iconBYBremote1024.png in Resources */,
 				240C440B1B2B1127009F456B /* notconnectedbybremote.png in Resources */,
 				6F6A118A174DA127004465B5 /* ChartBG.png in Resources */,
 				240C44271B2B28E0009F456B /* splash1136.png in Resources */,
+				1CC513241FF6953900DD61E4 /* icon40@3x.png in Resources */,
 				240C441D1B2B1C0D009F456B /* icon60@3x.png in Resources */,
 				6F5FE06718273FBC00FA8647 /* battery-80.png in Resources */,
 				6F6A118B174DA127004465B5 /* ChartBG@2x.png in Resources */,
@@ -464,7 +476,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "22e5f549-6433-4257-bd8d-1a6376aa1261";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
