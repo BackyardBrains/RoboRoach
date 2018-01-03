@@ -16,8 +16,12 @@
 //connection variables
 #define LED_CONNECTION_PULSE_LENGTH 1000
 #define LED_CONNECTION_PERIOD 10000
-
 #define ONE_SECOND_IN_TIMER_PULSES 10000
+#define LED_PWM_PERIOD 20
+#define LED_PWM_ON_INTERVAL 5
+uint8 ledPWMCounter = 0;
+uint8 ledPWMSignal = 0;
+
 int connectionStatus = 0;
 int initial; 
 int ledConnectionCounter = 0;
@@ -249,6 +253,19 @@ CY_ISR(mainTimerInterruptHandler)
     //DurationTimer_WriteCounter(0);
     DurationTimer_ClearInterrupt(DurationTimer_INTR_MASK_CC_MATCH);
 
+    ledPWMCounter++;
+    if(ledPWMCounter==LED_PWM_PERIOD)
+    {
+        ledPWMCounter = 0; 
+    }
+    if(ledPWMCounter<LED_PWM_ON_INTERVAL)
+    {
+        ledPWMSignal =1;
+    }
+    else
+    {
+        ledPWMSignal = 0;
+    }
 
     //if we are not connected blink connection LED
     if(connectionStatus==0)
@@ -260,7 +277,7 @@ CY_ISR(mainTimerInterruptHandler)
         }
         if(ledConnectionCounter<LED_CONNECTION_PULSE_LENGTH)
         {
-            LED_Conn_Write(!LED_Conn_Read()); 
+            LED_Conn_Write(ledPWMSignal); 
         }
         else
         {
@@ -269,7 +286,7 @@ CY_ISR(mainTimerInterruptHandler)
     }
     else
     {
-        LED_Conn_Write(!LED_Conn_Read()); 
+        LED_Conn_Write(ledPWMSignal); 
     }
     
     //If stimulation is active generate PWM
@@ -294,12 +311,12 @@ CY_ISR(mainTimerInterruptHandler)
                 if(direction==Left)
                 {
                     Left_Write(1);
-                    LED_L_Write(!LED_L_Read());
+                    LED_L_Write(ledPWMSignal);
                 }
                 else
                 {
                     Right_Write(1);
-                    LED_R_Write(!LED_R_Read());
+                    LED_R_Write(ledPWMSignal);
                 }
                 
             }
@@ -309,12 +326,12 @@ CY_ISR(mainTimerInterruptHandler)
                 if(direction==Left)
                 {
                     Left_Write(0);
-                    LED_L_Write(!LED_L_Read());
+                    LED_L_Write(ledPWMSignal);
                 }
                 else
                 {
                     Right_Write(0);
-                    LED_R_Write(!LED_R_Read());
+                    LED_R_Write(ledPWMSignal);
                 }
                 if(stimPeriodCounter>stimPeriodMax)//end of one period 
                 {
@@ -356,8 +373,7 @@ int main(void)
     LED_R_Write(0);
     LED_L_Write(0); 
     
-    POT_SHDN_Write(0);
-    POT_SHDN_1_Write(0);
+    VCC_OUT_IO_PIN_Write(0);
 
     //start RTC
     Clock_Start();
@@ -375,15 +391,13 @@ int main(void)
         CyBle_ProcessEvents();
         if (connectionStatus == 0){
             initial = 1; 
-            POT_SHDN_Write(0);
-            POT_SHDN_1_Write(0);
+            VCC_OUT_IO_PIN_Write(0);
             CyBle_ProcessEvents();
             CyDelay(250); 
             CyBle_ProcessEvents();
         }
         else if (initial == 1){
-            POT_SHDN_Write(1);
-            POT_SHDN_1_Write(1);
+            VCC_OUT_IO_PIN_Write(1);
             SPIM_Start(); 
             StimulusGenerator_Initialize(&generator);
             initial = 0;  
@@ -439,8 +453,7 @@ int main(void)
         }
         //go to sleep if idle
         if(gotoSleep) {         
-            POT_SHDN_Write(0);
-            POT_SHDN_1_Write(0);
+            VCC_OUT_IO_PIN_Write(0);
             DurationTimer_Stop();
             Clock_Stop();
             LED_Conn_Write(0);
