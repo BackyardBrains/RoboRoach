@@ -8,6 +8,10 @@
  * WHICH IS THE PROPERTY OF BACKYARD BRAINS.
  *
  * ========================================
+ * 
+ * Structure holds parameters of stimulation
+ * This file also implements setters for parameters and RND generator for stimulation
+ *
 */
 
 #include "StimulusGenerator.h"
