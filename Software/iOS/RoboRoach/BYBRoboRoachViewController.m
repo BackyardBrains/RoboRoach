@@ -149,20 +149,20 @@ BOOL isConnected = NO;
     [stimulationSettings setHidden:NO];
     
     [batteryImage setAlpha:1];
-    
-    if ([rr.activeRoboRoach.batteryLevel integerValue] > 90)
+    //battery dies at 2.5V
+    if ([rr.activeRoboRoach.batteryLevel integerValue] > 95)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-95.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 80)
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 90)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-90.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 70)
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 85)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-80.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 60)
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 80)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-50.png"];
-    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 50)
+    }else if ([rr.activeRoboRoach.batteryLevel integerValue] > 76)
     {
         batteryImage.image = [UIImage imageNamed: @"battery-25.png"];
     }else{

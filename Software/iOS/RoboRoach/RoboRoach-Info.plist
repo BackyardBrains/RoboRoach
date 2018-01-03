@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Application is not using photos from photo library</string>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Application will connect to BackyardBrains bluetooth product to control it&apos;s parameters.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -31,9 +25,15 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.6</string>
+	<string>1.7</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Application will connect to BackyardBrains bluetooth product to control it's parameters.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Application is not using photos from photo library</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Comic_Book.ttf</string>
