@@ -12,7 +12,7 @@
  * Serving BT and batery measurements is done in main() function in infinite loop for(;;). 
  * Code periodicaly checks if there are any new BT packages to serve
  *
- * Stimulation, PWM for LEDs and general time measurements is done in mainTimerInterruptHandler
+ * Stimulation, PWM for LEDs and general time measurement is done in mainTimerInterruptHandler
  * Main timer handler is called every 100uS which gives us enough time resolution to do PWM 
  * for LEDs and stimulation.
  *
@@ -388,6 +388,7 @@ CY_ISR(mainTimerInterruptHandler)
         batteryTimer = 0;
         sendBatteryLevel = 1;
     }
+   
 }
 
 
@@ -399,7 +400,7 @@ CY_ISR(mainTimerInterruptHandler)
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
-   
+   CySysClkIloStop();
     //initialize sleep/wake interrupts
     Sleep_StartEx(Sleep_interrupt);
     gotoSleep = 0;
@@ -415,7 +416,7 @@ int main(void)
     VCC_OUT_IO_PIN_Write(0);
 
     //start RTC
-    Clock_Start();
+    //Clock_Start();
     DurationTimer_WriteCounter(0);
     DurationTimer_Start();
     mainTimerInterrupt_StartEx(mainTimerInterruptHandler); 
@@ -427,17 +428,23 @@ int main(void)
     for(;;)
     {
         //process bluetooth communications
+        
         CyBle_ProcessEvents();
+        
         if (connectionStatus == 0){
             initial = 1; 
             VCC_OUT_IO_PIN_Write(0);
-            CyBle_ProcessEvents();
+            /*CyBle_ProcessEvents();
             CyDelay(250); 
             CyBle_ProcessEvents();
+            */
         }
         else if (initial == 1){
             VCC_OUT_IO_PIN_Write(1);
             SPIM_Start(); 
+            //seed random generator to some random number from 0 to 255
+            //using batery time 
+            generator.prngCurrent = batteryTimer%255;
             StimulusGenerator_Initialize(&generator);
             initial = 0;  
         }
@@ -490,13 +497,17 @@ int main(void)
         if(gotoSleep) {         
             VCC_OUT_IO_PIN_Write(0);
             DurationTimer_Stop();
-            Clock_Stop();
+            //Clock_Stop();
             LED_Conn_Write(0);
             CS_Write(0);
             SleepComponents();
             CySysPmFreezeIo();
             CySysPmHibernate(); 
         }
+       
+         CySysPmSleep();
+        
+       
     }
 }
 

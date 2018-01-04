@@ -60,7 +60,7 @@ void StimulusGenerator_Initialize(struct StimulusGenerator * this) {
     this->currentHigh = 0;
     
     //seed prng
-    this->prngCurrent = Clock_GetTime() % 255;
+    //this->prngCurrent = Clock_GetTime() % 255;
     
 
     
