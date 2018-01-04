@@ -43,7 +43,7 @@ int initial;                                        //"logic" variable that flag
 uint8 batteryLevel = 70;                            //battery level expressed in %
 int16 batteryMeasurement = 0;                       //battery level in AD units
 int batteryTimer = 0;                               //control counter used for periodic battery measurements
-#define BATTERY_TIMER_PERIOD 30000                  //period of battery measurements expressed in timer periods
+#define BATTERY_TIMER_PERIOD 10                     //period of battery measurements expressed in seconds
 int sendBatteryLevel = 1;                           //flag that signals to main loop to send battery level
 
 CYBLE_API_RESULT_T apiResult;                       //Variable holds result of BT notification operation
@@ -67,11 +67,118 @@ int stimulationActive = 0;                          //flag 1- stimulation active
 
 
 
+
+//
+// Main timer handler. Executes every 100uS
+// I here we generate PWM for stimulation and for LEDs
+// Also it is used for other measurements of time for ex. for periodic 
+// batery measurements
+//
+CY_ISR(mainTimerInterruptHandler)
+{
+    //clear interupt 
+    DurationTimer_ClearInterrupt(DurationTimer_INTR_MASK_CC_MATCH);
+
+    //generate PWM for LEDs
+    ledPWMCounter++;
+    if(ledPWMCounter==LED_PWM_PERIOD)
+    {
+        //end of PWM period
+        ledPWMCounter = 0; 
+    }
+    if(ledPWMCounter<LED_PWM_ON_INTERVAL)
+    {
+        ledPWMSignal =1;//put PWM signal to ON
+    }
+    else
+    {
+        ledPWMSignal = 0;//put PWM signal to OFF
+    }
+
+    
+    //If stimulation is active generate PWM for stimulation
+    if(stimulationActive==1)
+    {
+        stimLengthCounter++;
+        if(stimLengthCounter>stimDurationMax)//end of stimulation
+        {
+            //turn off all outputs used for stimulation
+            stimulationActive = 0;
+            Left_Write(0);
+            Right_Write(0);
+            LED_R_Write(0);
+            LED_L_Write(0);
+            DurationTimer_Stop();
+        }
+        else
+        {
+            stimPeriodCounter++;
+            if(stimPeriodCounter<=stimPulseONMax)
+            {
+                //Inside ON part of period
+                if(direction==Left)
+                {
+                    Left_Write(1);
+                    LED_L_Write(ledPWMSignal);
+                }
+                else
+                {
+                    Right_Write(1);
+                    LED_R_Write(ledPWMSignal);
+                }
+                
+            }
+            else
+            {
+                //Inside OFF part of period
+                if(direction==Left)
+                {
+                    Left_Write(0);
+                    LED_L_Write(ledPWMSignal);
+                }
+                else
+                {
+                    Right_Write(0);
+                    LED_R_Write(ledPWMSignal);
+                }
+                if(stimPeriodCounter>stimPeriodMax)//end of one period 
+                {
+                    stimPeriodCounter =0;
+                    //if we are using RND generated stim. generate PWM stim. parameters after each period 
+                    //of stimulation
+                    if(generator.randomMode!=0)
+                    {
+                        StimulusGenerator_Randomize(&generator);
+                        stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
+                        
+                        stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
+                        stimPulseONMax = (ONE_SECOND_IN_TIMER_PULSES/1000)*generator.pulseWidth;
+                    }
+                }
+            }
+        }
+    
+    }
+
+    
+   
+}
+
+
+
+
+
+
 //
 // Reset all variables/counters before stimulation
 //
 void startStimulus(enum Direction dir)
 {
+    
+    DurationTimer_WriteCounter(0);
+    DurationTimer_Start();
+    mainTimerInterrupt_StartEx(mainTimerInterruptHandler); 
+    
     stimulationActive = 0;
     
     //if stim. is random randomize PWM parameters 
@@ -110,10 +217,19 @@ void startStimulus(enum Direction dir)
 void StackHandler(uint32 eventCode, void* eventParam) {
     
     CYBLE_GATTS_WRITE_REQ_PARAM_T *wrReq;
-    
+    CYBLE_BLESS_CLK_CFG_PARAMS_T clockConfig;
+
     switch(eventCode) {
         case CYBLE_EVT_STACK_ON: 
-        
+            CyBle_GetBleClockCfgParam(&clockConfig);
+
+             /* C8. Set the device sleep-clock accuracy (SCA) based on the tuned ppm
+             of the WCO */
+             clockConfig.bleLlSca = CYBLE_LL_SCA_000_TO_020_PPM;
+
+             /* C8. Set the clock parameter of BLESS with updated values */
+             CyBle_SetBleClockCfgParam(&clockConfig);
+
         case CYBLE_EVT_GAP_DEVICE_DISCONNECTED:
         
             CyBle_GappStartAdvertisement(CYBLE_ADVERTISING_FAST);
@@ -121,7 +237,7 @@ void StackHandler(uint32 eventCode, void* eventParam) {
             //set connection bool to false
             connectionStatus = 0;
             LED_Conn_Write(0);
-            
+            SPIM_Stop();
             //start sleep countdown
             sleepCountdown = SLEEP_TIMER_READY;
             
@@ -252,7 +368,8 @@ void BasCallBack(uint32 event, void *eventParam)
 // Functions to put all components to sleep and wake them up
 //
 CY_ISR(Sleep_interrupt) {   
-   //clear sleep interrupts
+   
+    //clear sleep interrupts
    CySysWdtClearInterrupt(CY_SYS_WDT_COUNTER0_INT);
 
    Sleep_ClearPending();
@@ -260,137 +377,33 @@ CY_ISR(Sleep_interrupt) {
    //decrement sleep countdown, ~1 time per second
    sleepCountdown--;
 
+   
    if(sleepCountdown == 0) {
         //set sleep bool
         gotoSleep = 1;
    }  
-}
 
-//
-// Main timer handler. Executes every 100uS
-// I here we generate PWM for stimulation and for LEDs
-// Also it is used for other measurements of time for ex. for periodic 
-// batery measurements
-//
-CY_ISR(mainTimerInterruptHandler)
-{
-    //clear interupt 
-    DurationTimer_ClearInterrupt(DurationTimer_INTR_MASK_CC_MATCH);
-
-    //generate PWM for LEDs
-    ledPWMCounter++;
-    if(ledPWMCounter==LED_PWM_PERIOD)
+    if(connectionStatus==1)
     {
-        //end of PWM period
-        ledPWMCounter = 0; 
-    }
-    if(ledPWMCounter<LED_PWM_ON_INTERVAL)
-    {
-        ledPWMSignal =1;//put PWM signal to ON
-    }
-    else
-    {
-        ledPWMSignal = 0;//put PWM signal to OFF
-    }
-
-    
-    if(connectionStatus==0)
-    {
-        //generate blinking signal while waiting to connect 
-        ledConnectionCounter++;
-        if(ledConnectionCounter==LED_CONNECTION_PERIOD)
+        batteryTimer++;
+        if(batteryTimer>=BATTERY_TIMER_PERIOD)
         {
-            ledConnectionCounter = 0;//rewind period counter
-        }
-        if(ledConnectionCounter<LED_CONNECTION_PULSE_LENGTH)
-        {
-            LED_Conn_Write(ledPWMSignal); 
-        }
-        else
-        {
-            LED_Conn_Write(0);
+            //signal to main loop that we need to send batery level notification
+            //by setting sendBatteryLevel to 1
+             ADCForBattery_Start();
+            batteryTimer = 0;
+            sendBatteryLevel = 1;
         }
     }
     else
     {
-        //make "solid" ON LED when connected to device (actualy it is PWM signal) 
-        LED_Conn_Write(ledPWMSignal); 
+        LED_Conn_Write(1);
+        CyDelay(20);
+        LED_Conn_Write(0);
+        
     }
     
-    //If stimulation is active generate PWM for stimulation
-    if(stimulationActive==1)
-    {
-        stimLengthCounter++;
-        if(stimLengthCounter>stimDurationMax)//end of stimulation
-        {
-            //turn off all outputs used for stimulation
-            stimulationActive = 0;
-            Left_Write(0);
-            Right_Write(0);
-            LED_R_Write(0);
-            LED_L_Write(0);
-        }
-        else
-        {
-            stimPeriodCounter++;
-            if(stimPeriodCounter<=stimPulseONMax)
-            {
-                //Inside ON part of period
-                if(direction==Left)
-                {
-                    Left_Write(1);
-                    LED_L_Write(ledPWMSignal);
-                }
-                else
-                {
-                    Right_Write(1);
-                    LED_R_Write(ledPWMSignal);
-                }
-                
-            }
-            else
-            {
-                //Inside OFF part of period
-                if(direction==Left)
-                {
-                    Left_Write(0);
-                    LED_L_Write(ledPWMSignal);
-                }
-                else
-                {
-                    Right_Write(0);
-                    LED_R_Write(ledPWMSignal);
-                }
-                if(stimPeriodCounter>stimPeriodMax)//end of one period 
-                {
-                    stimPeriodCounter =0;
-                    //if we are using RND generated stim. generate PWM stim. parameters after each period 
-                    //of stimulation
-                    if(generator.randomMode!=0)
-                    {
-                        StimulusGenerator_Randomize(&generator);
-                        stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
-                        
-                        stimPeriodMax = ONE_SECOND_IN_TIMER_PULSES/generator.pulseFrequency;
-                        stimPulseONMax = (ONE_SECOND_IN_TIMER_PULSES/1000)*generator.pulseWidth;
-                    }
-                }
-            }
-        }
-    
-    }
-
-    batteryTimer++;
-    if(batteryTimer>=BATTERY_TIMER_PERIOD)
-    {
-        //signal to main loop that we need to send batery level notification
-        //by setting sendBatteryLevel to 1
-        batteryTimer = 0;
-        sendBatteryLevel = 1;
-    }
-   
 }
-
 
 
 //
@@ -400,7 +413,13 @@ CY_ISR(mainTimerInterruptHandler)
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
-   CySysClkIloStop();
+    /* C1. Stop the ILO to reduce current consumption */
+    CySysClkIloStop();
+    /* C2. Configure the divider values for the ECO, so that a 3-MHz ECO divided
+    clock can be provided to the CPU in Sleep mode */
+    CySysClkWriteEcoDiv(CY_SYS_CLK_ECO_DIV8);
+
+
     //initialize sleep/wake interrupts
     Sleep_StartEx(Sleep_interrupt);
     gotoSleep = 0;
@@ -415,13 +434,12 @@ int main(void)
     
     VCC_OUT_IO_PIN_Write(0);
 
-    //start RTC
-    //Clock_Start();
-    DurationTimer_WriteCounter(0);
+    
+    /*DurationTimer_WriteCounter(0);
     DurationTimer_Start();
     mainTimerInterrupt_StartEx(mainTimerInterruptHandler); 
+    */
     
-    ADCForBattery_Start();
     
     
     //initalize parameters to defaults
@@ -430,14 +448,17 @@ int main(void)
         //process bluetooth communications
         
         CyBle_ProcessEvents();
+
+        CyBle_EnterLPM(CYBLE_BLESS_SLEEP);
         
         if (connectionStatus == 0){
             initial = 1; 
             VCC_OUT_IO_PIN_Write(0);
-            /*CyBle_ProcessEvents();
-            CyDelay(250); 
+           
+            /*CyDelay(250); 
             CyBle_ProcessEvents();
-            */
+             */
+            
         }
         else if (initial == 1){
             VCC_OUT_IO_PIN_Write(1);
@@ -453,11 +474,13 @@ int main(void)
         //send batery level notification
         if(sendBatteryLevel==1)
         {
+           
             //measure voltage on ADC (ADC has 1.024V reference inside)
             ADCForBattery_StartConvert();
             ADCForBattery_IsEndConversion(ADCForBattery_WAIT_FOR_RESULT);
             //get value from first analog channel
             batteryMeasurement = ADCForBattery_GetResult16(0x00u);
+            ADCForBattery_Stop();
             //divide by 20 (it is 11bit ADC so it will return 0-2048 value)
             //and we want to convert it to percents
             batteryLevel = batteryMeasurement/20;
@@ -503,10 +526,13 @@ int main(void)
             SleepComponents();
             CySysPmFreezeIo();
             CySysPmHibernate(); 
+            //CySysPmStop();
         }
-       
-         CySysPmSleep();
         
+       
+        
+         CySysPmSleep();
+         //CySysPmDeepSleep();
        
     }
 }
