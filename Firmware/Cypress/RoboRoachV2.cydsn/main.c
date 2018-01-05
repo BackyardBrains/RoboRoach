@@ -43,7 +43,7 @@ int initial;                                        //"logic" variable that flag
 uint8 batteryLevel = 70;                            //battery level expressed in %
 int16 batteryMeasurement = 0;                       //battery level in AD units
 int batteryTimer = 0;                               //control counter used for periodic battery measurements
-#define BATTERY_TIMER_PERIOD 10                     //period of battery measurements expressed in seconds
+#define BATTERY_TIMER_PERIOD 2666                     //period of battery measurements expressed in seconds
 int sendBatteryLevel = 1;                           //flag that signals to main loop to send battery level
 
 CYBLE_API_RESULT_T apiResult;                       //Variable holds result of BT notification operation
@@ -51,8 +51,8 @@ CYBLE_CONN_HANDLE_T connectionHandle;               //Handle for BT connection
 
 struct StimulusGenerator generator;                 //Stimulus generator struct. Holds all stimmulation parameters
 
-const int SLEEP_TIMER_READY = 30;                   //Sleep timer variables sec
-const int SLEEP_TIMER_ACTIVE = 180;                 //Sleep timer variables sec
+const int SLEEP_TIMER_READY = 450;                   //Sleep timer variables sec
+const int SLEEP_TIMER_ACTIVE = 19700;                 //Sleep timer variables sec
 int sleepCountdown;                                 //Sleep countdown counter, decrement each Sleep_interrupt handler call
 uint8 gotoSleep;                                    //flag that signals main loop that it should put micro to sleep
 
@@ -240,7 +240,7 @@ void StackHandler(uint32 eventCode, void* eventParam) {
             SPIM_Stop();
             //start sleep countdown
             sleepCountdown = SLEEP_TIMER_READY;
-            
+            batteryTimer=BATTERY_TIMER_PERIOD;//trigger measurement of battery
             break;
             
         case CYBLE_EVT_GATT_CONNECT_IND:
@@ -367,43 +367,112 @@ void BasCallBack(uint32 event, void *eventParam)
 //
 // Functions to put all components to sleep and wake them up
 //
-CY_ISR(Sleep_interrupt) {   
+#define CONN_LED_TIMER_MAX 25
+int conneLedOn = CONN_LED_TIMER_MAX;
+
+void sleepFunction() {   
    
     //clear sleep interrupts
-   CySysWdtClearInterrupt(CY_SYS_WDT_COUNTER0_INT);
-
-   Sleep_ClearPending();
-
-   //decrement sleep countdown, ~1 time per second
-   sleepCountdown--;
-
-   
-   if(sleepCountdown == 0) {
-        //set sleep bool
-        gotoSleep = 1;
-   }  
-
-    if(connectionStatus==1)
+  
+    if(stimulationActive==0)
     {
-        batteryTimer++;
-        if(batteryTimer>=BATTERY_TIMER_PERIOD)
-        {
-            //signal to main loop that we need to send batery level notification
-            //by setting sendBatteryLevel to 1
-             ADCForBattery_Start();
-            batteryTimer = 0;
-            sendBatteryLevel = 1;
-        }
-    }
-    else
-    {
-        LED_Conn_Write(1);
-        CyDelay(20);
-        LED_Conn_Write(0);
-        
+           //decrement sleep countdown, ~1 time per second
+           sleepCountdown--;
+
+           
+           if(sleepCountdown == 0) {
+                //set sleep bool
+                gotoSleep = 1;
+           }  
+
+            if(connectionStatus==1)
+            {
+                batteryTimer++;
+                if(batteryTimer>=BATTERY_TIMER_PERIOD)
+                {
+                    //signal to main loop that we need to send batery level notification
+                    //by setting sendBatteryLevel to 1
+                     ADCForBattery_Start();
+                    batteryTimer = 0;
+                    sendBatteryLevel = 1;
+                }
+            }
+            else
+            {
+                conneLedOn--;
+                if(conneLedOn==0)
+                {
+                    LED_Conn_Write(1);
+                    CyDelay(20);
+                    LED_Conn_Write(0);
+                    conneLedOn = CONN_LED_TIMER_MAX;
+                }
+              
+                
+                
+                
+                
+            }
     }
     
 }
+
+static void LowPowerImplementation(void)
+{
+    CYBLE_LP_MODE_T bleMode;
+    uint8 interruptStatus;
+    
+    /* For advertising and connected states, implement deep sleep 
+     * functionality to achieve low power in the system. For more details
+     * on the low power implementation, refer to the Low Power Application 
+     * Note.
+     */
+    if((CyBle_GetState() == CYBLE_STATE_ADVERTISING) || 
+       (CyBle_GetState() == CYBLE_STATE_CONNECTED))
+    {
+        /* Request BLE subsystem to enter into Deep-Sleep mode between connection and advertising intervals */
+        bleMode = CyBle_EnterLPM(CYBLE_BLESS_DEEPSLEEP);
+        /* Disable global interrupts */
+        interruptStatus = CyEnterCriticalSection();
+        /* When BLE subsystem has been put into Deep-Sleep mode */
+        if(bleMode == CYBLE_BLESS_DEEPSLEEP)
+        {
+            /* And it is still there or ECO is on */
+            if((CyBle_GetBleSsState() == CYBLE_BLESS_STATE_ECO_ON) || 
+               (CyBle_GetBleSsState() == CYBLE_BLESS_STATE_DEEPSLEEP))
+            {
+                /* Put the CPU into the Deep-Sleep mode when all debug information has been sent */
+               /*if((UART_DEB_SpiUartGetTxBufferSize() + UART_DEB_GET_TX_FIFO_SR_VALID) == 0u)
+                {*/
+                if(connectionStatus ==0 || stimulationActive==0)
+                {
+                    CySysPmDeepSleep();
+                 }
+                else
+                {
+                    CySysPmSleep();
+                }
+                /*}
+                else 
+                {
+                    CySysPmSleep();
+                }*/
+            }
+        }
+        else /* When BLE subsystem has been put into Sleep mode or is active */
+        {
+            /* And hardware doesn't finish Tx/Rx opeation - put the CPU into Sleep mode */
+            if(CyBle_GetBleSsState() != CYBLE_BLESS_STATE_EVENT_CLOSE)
+            {
+                CySysPmSleep();
+            }
+        }
+        /* Enable global interrupt */
+        CyExitCriticalSection(interruptStatus);
+    }
+}
+
+
 
 
 //
@@ -421,7 +490,7 @@ int main(void)
 
 
     //initialize sleep/wake interrupts
-    Sleep_StartEx(Sleep_interrupt);
+    //Sleep_StartEx(Sleep_interrupt);
     gotoSleep = 0;
     
     //initalize BLE
@@ -449,7 +518,7 @@ int main(void)
         
         CyBle_ProcessEvents();
 
-        CyBle_EnterLPM(CYBLE_BLESS_SLEEP);
+       // CyBle_EnterLPM(CYBLE_BLESS_DEEPSLEEP);
         
         if (connectionStatus == 0){
             initial = 1; 
@@ -530,10 +599,12 @@ int main(void)
         }
         
        
-        
-         CySysPmSleep();
+        // LED_L_Write(1);
+        // LED_L_Write(0); 
+        sleepFunction();
+         //CySysPmSleep();
          //CySysPmDeepSleep();
-       
+       LowPowerImplementation();
     }
 }
 
