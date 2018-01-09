@@ -9,10 +9,14 @@
  *
  * Theory of operation:
  *
- * Serving BT and batery measurements is done in main() function in infinite loop for(;;). 
- * Code periodicaly checks if there are any new BT packages to serve
+ * Power consumption minimization was priority in this project
+ * Since we can not go to deep sleep if we have to have clocks active for timers/counters, ADC or SPI
+ * we had to activate those modules only when they are necessary.
+ * So for measurement of time (for blink of connection LED or battery timer) we counted BT events 
+ * during advertizing (every ~250ms) or during connected state (every ~20ms). For stimulation we needed
+ * greater time precision so we used timer and we didn't go to deep sleep but just to sleep.
  *
- * Stimulation, PWM for LEDs and general time measurement is done in mainTimerInterruptHandler
+ * Stimulation and PWM for LEDs is done in mainTimerInterruptHandler
  * Main timer handler is called every 100uS which gives us enough time resolution to do PWM 
  * for LEDs and stimulation.
  *
@@ -24,10 +28,6 @@
 
 //Timer period is 100uS
 #define ONE_SECOND_IN_TIMER_PULSES 10000            //how many periods of main timer is one second
-
-#define LED_CONNECTION_PULSE_LENGTH 1000            //Pulse length of connection LED expressed in timer periods
-#define LED_CONNECTION_PERIOD 10000                 //period of pulse of connection LED in timer periods
-int ledConnectionCounter = 0;                       //control counter used to pulse connection LED
 
 
 //we use PWM for LEDs to lower power consumption
@@ -43,7 +43,7 @@ int initial;                                        //"logic" variable that flag
 uint8 batteryLevel = 70;                            //battery level expressed in %
 int16 batteryMeasurement = 0;                       //battery level in AD units
 int batteryTimer = 0;                               //control counter used for periodic battery measurements
-#define BATTERY_TIMER_PERIOD 2666                     //period of battery measurements expressed in seconds
+#define BATTERY_TIMER_PERIOD 2666                   //period of battery measurements 
 int sendBatteryLevel = 1;                           //flag that signals to main loop to send battery level
 
 CYBLE_API_RESULT_T apiResult;                       //Variable holds result of BT notification operation
@@ -51,8 +51,8 @@ CYBLE_CONN_HANDLE_T connectionHandle;               //Handle for BT connection
 
 struct StimulusGenerator generator;                 //Stimulus generator struct. Holds all stimmulation parameters
 
-const int SLEEP_TIMER_READY = 450;                   //Sleep timer variables sec
-const int SLEEP_TIMER_ACTIVE = 19700;                 //Sleep timer variables sec
+const int SLEEP_TIMER_READY = 450;                   //Sleep timer variables 
+const int SLEEP_TIMER_ACTIVE = 19700;                 //Sleep timer variables 
 int sleepCountdown;                                 //Sleep countdown counter, decrement each Sleep_interrupt handler call
 uint8 gotoSleep;                                    //flag that signals main loop that it should put micro to sleep
 
@@ -71,8 +71,6 @@ int stimulationActive = 0;                          //flag 1- stimulation active
 //
 // Main timer handler. Executes every 100uS
 // I here we generate PWM for stimulation and for LEDs
-// Also it is used for other measurements of time for ex. for periodic 
-// batery measurements
 //
 CY_ISR(mainTimerInterruptHandler)
 {
@@ -159,12 +157,7 @@ CY_ISR(mainTimerInterruptHandler)
         }
     
     }
-
-    
-   
 }
-
-
 
 
 
@@ -365,18 +358,27 @@ void BasCallBack(uint32 event, void *eventParam)
 }
 
 //
-// Functions to put all components to sleep and wake them up
+// Functions implements countdown timers for hibernate, period
+// of battery measurement and connection LED blink.
+// This is called from main infinite loop in main function
+// Since infinite loop is blocked during sleep we are executing this 
+// only when BT event wakes up BLESS and CPU.
+// During advertizing BT events are generated every ~250ms and during 
+// connected state every 20ms or so. So if we count those we can
+// blink each second or measure battery every 10sec.
+// We use this technique to avoid using any active timer/counter since than
+// we can not go to deep sleep.
+// I am sorry for this implementation but we had to do this for power comsumption
+// optimization.
 //
 #define CONN_LED_TIMER_MAX 25
 int conneLedOn = CONN_LED_TIMER_MAX;
 
-void sleepFunction() {   
+void countdownTimersUpdate() {   
    
-    //clear sleep interrupts
-  
     if(stimulationActive==0)
     {
-           //decrement sleep countdown, ~1 time per second
+           //decrement sleep countdown
            sleepCountdown--;
 
            
@@ -407,67 +409,66 @@ void sleepFunction() {
                     LED_Conn_Write(0);
                     conneLedOn = CONN_LED_TIMER_MAX;
                 }
-              
-                
-                
-                
-                
             }
     }
     
 }
 
+
+
+//
+// Function controlls system sleep mode and BLESS sleep mode.
+// BLESS must be in deep sleep if we want CPU to be in deep sleep.
+// If BLESS is not in deep sleep that we put CPU just in sleep mode
+//
 static void LowPowerImplementation(void)
 {
     CYBLE_LP_MODE_T bleMode;
     uint8 interruptStatus;
     
-    /* For advertising and connected states, implement deep sleep 
-     * functionality to achieve low power in the system. For more details
-     * on the low power implementation, refer to the Low Power Application 
-     * Note.
-     */
+    // For advertising and connected states, implement deep sleep 
+    // functionality to achieve low power in the system. 
+    // Except if we have to do some job than we should use sleep
+    //
     if((CyBle_GetState() == CYBLE_STATE_ADVERTISING) || 
        (CyBle_GetState() == CYBLE_STATE_CONNECTED))
     {
-        /* Request BLE subsystem to enter into Deep-Sleep mode between connection and advertising intervals */
+        // Request BLE subsystem to enter into Deep-Sleep mode between connection and advertising intervals */
         bleMode = CyBle_EnterLPM(CYBLE_BLESS_DEEPSLEEP);
-        /* Disable global interrupts */
+        // Disable global interrupts 
         interruptStatus = CyEnterCriticalSection();
-        /* When BLE subsystem has been put into Deep-Sleep mode */
+        // When BLE subsystem has been put into Deep-Sleep mode 
         if(bleMode == CYBLE_BLESS_DEEPSLEEP)
         {
-            /* And it is still there or ECO is on */
+            // And it is still there or ECO is on
             if((CyBle_GetBleSsState() == CYBLE_BLESS_STATE_ECO_ON) || 
                (CyBle_GetBleSsState() == CYBLE_BLESS_STATE_DEEPSLEEP))
             {
-                /* Put the CPU into the Deep-Sleep mode when all debug information has been sent */
-               /*if((UART_DEB_SpiUartGetTxBufferSize() + UART_DEB_GET_TX_FIFO_SR_VALID) == 0u)
-                {*/
+                // Put the CPU into the Deep-Sleep mode when we don't need to 
+                // do anything else except BT. 
+                // Namely advertizing and waiting for command from phone 
                 if(connectionStatus ==0 || stimulationActive==0)
                 {
                     CySysPmDeepSleep();
                  }
                 else
                 {
+                    //if we are stimulation we must run timer so 
+                    //we have to be in sleep (not deep sleep)
                     CySysPmSleep();
                 }
-                /*}
-                else 
-                {
-                    CySysPmSleep();
-                }*/
+               
             }
         }
-        else /* When BLE subsystem has been put into Sleep mode or is active */
+        else // When BLE subsystem has been put into Sleep mode or is active 
         {
-            /* And hardware doesn't finish Tx/Rx opeation - put the CPU into Sleep mode */
+            // And hardware doesn't finish Tx/Rx opeation - put the CPU into Sleep mode 
             if(CyBle_GetBleSsState() != CYBLE_BLESS_STATE_EVENT_CLOSE)
             {
                 CySysPmSleep();
             }
         }
-        /* Enable global interrupt */
+        // Enable global interrupt 
         CyExitCriticalSection(interruptStatus);
     }
 }
@@ -481,53 +482,37 @@ static void LowPowerImplementation(void)
 //
 int main(void)
 {
-    CyGlobalIntEnable; /* Enable global interrupts. */
-    /* C1. Stop the ILO to reduce current consumption */
+    // Enable global interrupts. 
+    CyGlobalIntEnable; 
+    // Stop the ILO to reduce current consumption 
     CySysClkIloStop();
-    /* C2. Configure the divider values for the ECO, so that a 3-MHz ECO divided
-    clock can be provided to the CPU in Sleep mode */
+    // Configure the divider values for the ECO, so that a 3-MHz ECO divided
+    // clock can be provided to the CPU in Sleep mode 
     CySysClkWriteEcoDiv(CY_SYS_CLK_ECO_DIV8);
 
 
     //initialize sleep/wake interrupts
-    //Sleep_StartEx(Sleep_interrupt);
     gotoSleep = 0;
     
     //initalize BLE
     CyBle_Start(StackHandler);
     CyBle_BasRegisterAttrCallback(BasCallBack);
     
-    //initialize comms w DigiPot
+    //initialize stim. LEDs
     LED_R_Write(0);
     LED_L_Write(0); 
     
     VCC_OUT_IO_PIN_Write(0);
-
-    
-    /*DurationTimer_WriteCounter(0);
-    DurationTimer_Start();
-    mainTimerInterrupt_StartEx(mainTimerInterruptHandler); 
-    */
-    
-    
     
     //initalize parameters to defaults
     for(;;)
     {
         //process bluetooth communications
-        
         CyBle_ProcessEvents();
-
-       // CyBle_EnterLPM(CYBLE_BLESS_DEEPSLEEP);
         
         if (connectionStatus == 0){
             initial = 1; 
-            VCC_OUT_IO_PIN_Write(0);
-           
-            /*CyDelay(250); 
-            CyBle_ProcessEvents();
-             */
-            
+            VCC_OUT_IO_PIN_Write(0);           
         }
         else if (initial == 1){
             VCC_OUT_IO_PIN_Write(1);
@@ -543,7 +528,6 @@ int main(void)
         //send batery level notification
         if(sendBatteryLevel==1)
         {
-           
             //measure voltage on ADC (ADC has 1.024V reference inside)
             ADCForBattery_StartConvert();
             ADCForBattery_IsEndConversion(ADCForBattery_WAIT_FOR_RESULT);
@@ -597,14 +581,15 @@ int main(void)
             CySysPmHibernate(); 
             //CySysPmStop();
         }
+ 
+        //Uncomment this to measure with scope how often 
+        //BT events are processed
+        //LED_L_Write(1); 
+        //LED_L_Write(0); 
         
-       
-        // LED_L_Write(1);
-        // LED_L_Write(0); 
-        sleepFunction();
-         //CySysPmSleep();
-         //CySysPmDeepSleep();
-       LowPowerImplementation();
+        countdownTimersUpdate();
+
+        LowPowerImplementation();
     }
 }
 
