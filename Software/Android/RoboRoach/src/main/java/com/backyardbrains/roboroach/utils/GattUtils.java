@@ -1,4 +1,4 @@
-package com.backyardbrains.roboroach;
+package com.backyardbrains.roboroach.utils;
 
 import java.util.UUID;
 

@@ -1,15 +1,17 @@
 package com.backyardbrains.roboroach;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
@@ -26,17 +28,30 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+import com.backyardbrains.roboroach.utils.BluetoothUtils;
+import java.util.List;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
+import static com.backyardbrains.roboroach.utils.LogUtils.LOGD;
+import static com.backyardbrains.roboroach.utils.LogUtils.LOGE;
+import static com.backyardbrains.roboroach.utils.LogUtils.makeLogTag;
 
-public class RoboRoachActivity extends Activity implements RoboRoachManagerCallbacks {
+public class RoboRoachActivity extends AppCompatActivity
+    implements RoboRoachManagerCallbacks, EasyPermissions.PermissionCallbacks {
+
+    private final static String TAG = makeLogTag(RoboRoachActivity.class);
+
+    private static final int BYB_SETTINGS_SCREEN = 121;
+    private static final int BYB_ACCESS_COARSE_LOCATION_PERM = 122;
+
     private static final long SCANNING_TIMEOUT = 5 * 1000; /* 5 seconds */
     private static final int ENABLE_BT_REQUEST_ID = 1;
 
-    private final static String TAG = RoboRoachActivity.class.getSimpleName();
     private boolean mScanning = false;
     private boolean mTurning = false;
     private boolean mOnSettingsScreen = false;
-
 
     private String mDeviceAddress;
 
@@ -49,8 +64,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
     private GestureDetector gestureDetector;
 
     Runnable scanTimeout = new Runnable() {
-        @Override
-        public void run() {
+        @Override public void run() {
             if (mRoboRoachManager == null) return;
             mScanning = false;
             mRoboRoachManager.stopScanning();
@@ -58,64 +72,54 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate()");
-
+        LOGD(TAG, "onCreate()");
 
         setContentView(R.layout.roboroach_main);
 
         mRoboRoachManager = new RoboRoachManager(this, this);
 
         // check if we have BT and BLE on board
-        if (mRoboRoachManager.checkBleHardwareAvailable() == false) {
-            bleMissing();
-        }
+        if (!BluetoothUtils.checkBleHardwareAvailable(this)) bleMissing();
+
+        // check if we have location permission
+        checkLocation();
 
         viewHolder = new ViewHolder();
-        viewHolder.roachImage = (ImageView) findViewById(R.id.imageRoach);
-        viewHolder.backpackImage = (ImageView) findViewById(R.id.imageBackpack);
-        viewHolder.goLeftText = (TextView) findViewById(R.id.textGoLeft);
-        viewHolder.goRightText = (TextView) findViewById(R.id.textGoRight);
-        viewHolder.configText = (TextView) findViewById(R.id.textConfig);
-        viewHolder.Duration = (SeekBar) findViewById(R.id.sbDuration);
-        viewHolder.Gain = (SeekBar) findViewById(R.id.sbGain);
-        viewHolder.Frequecy = (SeekBar) findViewById(R.id.sbFrequency);
-        viewHolder.PulseWidth = (SeekBar) findViewById(R.id.sbPulseWidth);
-        viewHolder.RandomMode = (Switch) findViewById(R.id.swRandomMode);
+        viewHolder.bind(this);
+
+        // set toolbar as actionbar
+        setSupportActionBar(viewHolder.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         viewHolder.roachImage.setVisibility(View.VISIBLE);
         viewHolder.backpackImage.setVisibility(View.INVISIBLE);
         viewHolder.goLeftText.setVisibility(View.INVISIBLE);
         viewHolder.goRightText.setVisibility(View.INVISIBLE);
 
-
         viewHolder.Frequecy.setMax(150);
         viewHolder.Frequecy.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-
                 mGATTFreq = seekBar.getProgress();
                 if (mGATTFreq < 1) mGATTFreq = 1;
 
                 //If the new freq it's greater than 1/2 the
                 if ((float) mRoboRoachManager.getRoboRoachPulseWidth() > (float) 500 / mGATTFreq) {
                     mGATTUpdate = new Runnable() {
-                        @Override
-                        public void run() {
-
+                        @Override public void run() {
                             float newFreq = (float) (1000 / mGATTFreq);
                             int newPW = (int) newFreq / 2;
                             mRoboRoachManager.updatePulseWidth(newPW);
                             viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
-
                         }
                     };
                     mHandler.postDelayed(mGATTUpdate, 500);
@@ -124,21 +128,17 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
                 viewHolder.PulseWidth.setMax(1000 / mGATTFreq);
                 mRoboRoachManager.updateFrequency(mGATTFreq);
                 viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
-
-
             }
         });
         viewHolder.Gain.setMax(100);
         viewHolder.Gain.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-
                 float roundedGain = Math.round((float) seekBar.getProgress() / 5.0f) * 5.0f;
                 mRoboRoachManager.updateGain((int) roundedGain);
                 viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
@@ -148,7 +148,6 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         viewHolder.RandomMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (mRoboRoachManager.isConnected()) {
-
                     mRoboRoachManager.updateRandomMode(isChecked);
                     viewHolder.PulseWidth.setEnabled(!viewHolder.RandomMode.isChecked());
                     viewHolder.Frequecy.setEnabled(!viewHolder.RandomMode.isChecked());
@@ -159,8 +158,7 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
 
         viewHolder.PulseWidth.setMax(50);
         viewHolder.PulseWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -172,11 +170,9 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             }
         });
 
-
         viewHolder.Duration.setMax(1000);
         viewHolder.Duration.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -191,115 +187,87 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             }
         });
 
-        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/comicbook.ttf");
-        viewHolder.goLeftText.setTypeface(typeFace);
-        viewHolder.goRightText.setTypeface(typeFace);
-        viewHolder.configText.setTypeface(typeFace);
-
         viewHolder.configText.setText("");
 
-        final Button button = (Button) findViewById(R.id.btnSaveSettings);
+        final Button button = findViewById(R.id.btnSaveSettings);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "Updating RoboRoach Settings");
+                LOGD(TAG, "Updating RoboRoach Settings");
                 mRoboRoachManager.updateFrequency(viewHolder.Frequecy.getProgress());
 
-
                 // Perform action on click
-                ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper);
+                ViewFlipper vf = findViewById(R.id.viewFlipper);
                 vf.showNext();
                 mOnSettingsScreen = false;
             }
         });
 
-
-        gestureDetector = new GestureDetector(this.getBaseContext(),
-                new SwipeGestureDetector());
+        gestureDetector = new GestureDetector(this.getBaseContext(), new SwipeGestureDetector());
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
+            getFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
         }
-
     }
 
-
-    public void updateSettingConstraints() {
-
-
-        //if ( self.roboRoach.randomMode.boolValue ){
-        //    [freqSlider setEnabled:NO];
-        //    [pulseWidthSlider setEnabled:NO];
-        //}else{
-        //    [freqSlider setEnabled:YES];
-        //    [pulseWidthSlider setEnabled:YES];
-        //}
-
-    }
-
-    @Override
-    protected void onResume() {
+    @Override protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume()");
+        LOGD(TAG, "onResume()");
 
-        // on every Resume check if BT is enabled (user could turn it off while app was in background etc.)
-        if (mRoboRoachManager.isBtEnabled() == false) {
+        // on every resume check if BT is enabled (user could turn it off while app was in background etc.)
+        if (!BluetoothUtils.isBtEnabled(this)) {
             // BT is not turned on - ask user to make it enabled
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_ID);
             // see onActivityResult to check what is the status of our request
         }
 
-        if (!mRoboRoachManager.initialize()) {
-            finish();
-        }
-        invalidateOptionsMenu();
+        // if RoboRoachManager cannot be initialized we should leave
+        if (!mRoboRoachManager.initialize()) finish();
 
+        invalidateOptionsMenu();
     }
 
-    ;
-
-
-    @Override
-    protected void onPause() {
+    @Override protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause()");
-
+        LOGD(TAG, "onPause()");
 
         if (mRoboRoachManager.isConnected()) {
-
             runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+                @Override public void run() {
                     mRoboRoachManager.stopMonitoringRssiValue();
                     mRoboRoachManager.disconnect();
                     mRoboRoachManager.close();
                 }
             });
-
         } else if (mScanning) {
             mScanning = false;
             mRoboRoachManager.stopScanning();
         }
 
         invalidateOptionsMenu();
-
     }
 
-    ;
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // check if user agreed to enable BT.
+        if (requestCode == ENABLE_BT_REQUEST_ID) {
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // user didn't want to turn on BT
+                btDisabled();
+                return;
+            }
+        }
 
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         if (mRoboRoachManager.isConnected()) {
             menu.findItem(R.id.menu_stop).setVisible(false);
             menu.findItem(R.id.menu_scan).setVisible(false);
             menu.findItem(R.id.menu_refresh).setActionView(null);
             menu.findItem(R.id.menu_disconnect).setVisible(true);
             menu.findItem(R.id.menu_settings).setVisible(true);
-
         } else {
             menu.findItem(R.id.menu_disconnect).setVisible(false);
             menu.findItem(R.id.menu_settings).setVisible(false);
@@ -307,19 +275,18 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
             if (mScanning) {
                 menu.findItem(R.id.menu_stop).setVisible(true);
                 menu.findItem(R.id.menu_scan).setVisible(false);
-                menu.findItem(R.id.menu_refresh).setActionView(
-                        R.layout.actionbar_progress);
+                menu.findItem(R.id.menu_refresh).setActionView(R.layout.actionbar_progress);
             } else {
                 menu.findItem(R.id.menu_stop).setVisible(false);
                 menu.findItem(R.id.menu_scan).setVisible(true);
                 menu.findItem(R.id.menu_refresh).setActionView(null);
             }
         }
+
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         switch (item.getItemId()) {
@@ -335,12 +302,11 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
                 break;
             case R.id.menu_disconnect:
                 runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    @Override public void run() {
                         mRoboRoachManager.disconnect();
                         mRoboRoachManager.close();
                         if (mOnSettingsScreen) {
-                            ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper);
+                            ViewFlipper vf = findViewById(R.id.viewFlipper);
                             vf.showNext();
                             mOnSettingsScreen = false;
                         }
@@ -350,38 +316,33 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
                 break;
             case R.id.menu_settings:
                 if (!mOnSettingsScreen) {
-                    ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipper);
+                    ViewFlipper vf = findViewById(R.id.viewFlipper);
                     vf.showNext();
                     mOnSettingsScreen = true;
                 }
                 break;
-
         }
         return true;
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_roboroach_main, container, false);
-            return rootView;
-        }
+    @Override public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event);
     }
 
-    public void uiDeviceConnected(final BluetoothGatt gatt,
-                                  final BluetoothDevice device) {
-        Log.d(TAG, "uiDeviceConnected()");
+    public void updateSettingConstraints() {
+        //if ( self.roboRoach.randomMode.boolValue ){
+        //    [freqSlider setEnabled:NO];
+        //    [pulseWidthSlider setEnabled:NO];
+        //}else{
+        //    [freqSlider setEnabled:YES];
+        //    [pulseWidthSlider setEnabled:YES];
+        //}
+    }
+
+    @Override public void uiDeviceConnected(final BluetoothGatt gatt, final BluetoothDevice device) {
+        LOGD(TAG, "uiDeviceConnected()");
         runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 //mDeviceStatus.setText("connected");
                 viewHolder.backpackImage.setImageAlpha(150);
                 viewHolder.backpackImage.setVisibility(View.VISIBLE);
@@ -390,12 +351,10 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         });
     }
 
-    public void uiDeviceDisconnected(final BluetoothGatt gatt,
-                                     final BluetoothDevice device) {
-        Log.d(TAG, "uiDeviceDisconnected()");
+    @Override public void uiDeviceDisconnected(final BluetoothGatt gatt, final BluetoothDevice device) {
+        LOGD(TAG, "uiDeviceDisconnected()");
         runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 viewHolder.configText.setText("");
                 viewHolder.backpackImage.setVisibility(View.INVISIBLE);
             }
@@ -404,19 +363,13 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         invalidateOptionsMenu();
     }
 
-    @Override
-    public void uiServicesFound() {
-
-
+    @Override public void uiServicesFound() {
         mRoboRoachManager.requestRoboRoachParameters();
     }
 
-    @Override
-    public void uiRoboRoachPropertiesUpdated() {
+    @Override public void uiRoboRoachPropertiesUpdated() {
         runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
+            @Override public void run() {
                 viewHolder.configText.setText(mRoboRoachManager.getRoboRoachConfigurationString());
                 viewHolder.backpackImage.setImageAlpha(255);
                 viewHolder.backpackImage.setVisibility(View.VISIBLE);
@@ -435,9 +388,8 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         });
     }
 
-    @Override
-    public void uiDeviceFound(BluetoothDevice device, int rssi, byte[] record) {
-        Log.d(TAG, "uiDeviceFound()");
+    @Override public void uiDeviceFound(BluetoothDevice device, int rssi, byte[] record) {
+        LOGD(TAG, "uiDeviceFound()");
 
         if (mHandler != null) {
             mHandler.removeCallbacks(scanTimeout);
@@ -448,42 +400,137 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         mDeviceAddress = device.getAddress();
 
         if (device.getName().equals("RoboRoach")) {
-
-            Log.d(TAG, "uiDeviceFound() ...Found a RoboRoach!");
+            LOGD(TAG, "uiDeviceFound() ...Found a RoboRoach!");
 
             // adding to the UI have to happen in UI thread
             runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+                @Override public void run() {
                     viewHolder.backpackImage.setImageAlpha(60);  //slowly builds up until connection
                     viewHolder.backpackImage.setVisibility(View.VISIBLE);
 
-                    Log.d(TAG, "uiDeviceFound() ... mDeviceAddress = " + mDeviceAddress);
+                    LOGD(TAG, "uiDeviceFound() ... mDeviceAddress = " + mDeviceAddress);
 
                     if (mScanning) {
                         mScanning = false;
                         invalidateOptionsMenu();
                         mRoboRoachManager.stopScanning();
-                        Log.d(TAG, "uiDeviceFound() ... mRoboRoachManager.stopScanning()");
-
+                        LOGD(TAG, "uiDeviceFound() ... mRoboRoachManager.stopScanning()");
                     }
 
-                    Log.d(TAG, "uiDeviceFound() ... about to call mRoboRoachManager.connect()");
+                    LOGD(TAG, "uiDeviceFound() ... about to call mRoboRoachManager.connect()");
                     mRoboRoachManager.connect(mDeviceAddress);
-                    Log.d(TAG, "uiDeviceFound() ... finished calling mRoboRoachManager.connect()");
+                    LOGD(TAG, "uiDeviceFound() ... finished calling mRoboRoachManager.connect()");
                 }
             });
-
-
         } else {
-
-            Log.d(TAG, "uiDeviceFound() ... Found a non-RoboRoach :( !");
-
+            LOGD(TAG, "uiDeviceFound() ... Found a non-RoboRoach :( !");
         }
     }
 
+    @Override public void uiLeftTurnSentSuccessfully(final int stimulusDuration) {
+        runOnUiThread(new Runnable() {
+            @Override public void run() {
+                viewHolder.goLeftText.setVisibility(View.VISIBLE);
+                mTurning = true;
+                addTurnCommandTimeout(stimulusDuration);
+            }
+        });
+    }
 
+    @Override public void uiRightTurnSentSuccessfully(final int stimulusDuration) {
+        runOnUiThread(new Runnable() {
+            @Override public void run() {
+                viewHolder.goRightText.setVisibility(View.VISIBLE);
+                mTurning = true;
+                addTurnCommandTimeout(stimulusDuration);
+            }
+        });
+    }
+
+    private void onLeftSwipe() {
+        LOGD(TAG, "onLeftSwipe()");
+        if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
+            if (!mTurning) mRoboRoachManager.turnLeft();
+        }
+    }
+
+    private void onRightSwipe() {
+        LOGD(TAG, "onRightSwipe()");
+        if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
+            if (!mTurning) mRoboRoachManager.turnRight();
+        }
+    }
+
+    /* make sure that potential scanning will take no longer
+ * than <SCANNING_TIMEOUT> seconds from now on */
+    private void addTurnCommandTimeout(int timeoutInMS) {
+        Runnable timeout = new Runnable() {
+            @Override public void run() {
+                viewHolder.goRightText.setVisibility(View.INVISIBLE);
+                viewHolder.goLeftText.setVisibility(View.INVISIBLE);
+                mTurning = false;
+            }
+        };
+        mHandler.postDelayed(timeout, timeoutInMS);
+    }
+
+    /* make sure that potential scanning will take no longer
+* than <SCANNING_TIMEOUT> seconds from now on */
+    private void addScanningTimeout() {
+        mHandler.postDelayed(scanTimeout, SCANNING_TIMEOUT);
+    }
+
+    private void btDisabled() {
+        Toast.makeText(this, getString(R.string.message_turn_on_bt), Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    private void bleMissing() {
+        Toast.makeText(this, getString(R.string.message_ble_hardware_required), Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    //==============================================
+    // ACCESS_COARSE_LOCATION PERMISSION
+    //==============================================
+
+    @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+        @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        LOGD(TAG, "onPermissionsGranted:" + requestCode + ":" + perms.size());
+    }
+
+    @Override public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        LOGD(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).setRationale(R.string.rationale_ask_again)
+                .setTitle(R.string.title_settings_dialog)
+                .setPositiveButton(R.string.action_setting)
+                .setNegativeButton(R.string.action_cancel)
+                .setRequestCode(BYB_SETTINGS_SCREEN)
+                .build()
+                .show();
+        }
+    }
+
+    @AfterPermissionGranted(BYB_ACCESS_COARSE_LOCATION_PERM) void checkLocation() {
+        if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            // Request the permission
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_access_coarse_location),
+                BYB_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+    }
+
+    /**
+     *
+     */
     static class ViewHolder {
+        Toolbar toolbar;
+
         TextView goLeftText;
         TextView goRightText;
         TextView configText;
@@ -496,142 +543,64 @@ public class RoboRoachActivity extends Activity implements RoboRoachManagerCallb
         SeekBar Gain;
         Switch RandomMode;
 
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (gestureDetector.onTouchEvent(event)) {
-            return true;
-        }
-        return super.onTouchEvent(event);
-    }
-
-
-    private void onLeftSwipe() {
-        // Do something
-        Log.d(TAG, "onLeftSwipe()");
-        if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
-            if (!mTurning) mRoboRoachManager.turnLeft();
+        // Binds UI elements to local variables
+        void bind(Activity activity) {
+            toolbar = activity.findViewById(R.id.toolbar);
+            roachImage = activity.findViewById(R.id.imageRoach);
+            backpackImage = activity.findViewById(R.id.imageBackpack);
+            goLeftText = activity.findViewById(R.id.textGoLeft);
+            goRightText = activity.findViewById(R.id.textGoRight);
+            configText = activity.findViewById(R.id.textConfig);
+            Duration = activity.findViewById(R.id.sbDuration);
+            Gain = activity.findViewById(R.id.sbGain);
+            Frequecy = activity.findViewById(R.id.sbFrequency);
+            PulseWidth = activity.findViewById(R.id.sbPulseWidth);
+            RandomMode = activity.findViewById(R.id.swRandomMode);
         }
     }
 
-    private void onRightSwipe() {
-        // Do something
-        Log.d(TAG, "onRightSwipe()");
-        if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
-            if (!mTurning) mRoboRoachManager.turnRight();
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+
+        public PlaceholderFragment() {
         }
 
-    }
-
-    @Override
-    public void uiLeftTurnSentSuccessfully(final int stimulusDuration) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                viewHolder.goLeftText.setVisibility(View.VISIBLE);
-                mTurning = true;
-                addTurnCommandTimeout(stimulusDuration);
-            }
-        });
-    }
-
-    @Override
-    public void uiRightTurnSentSuccessfully(final int stimulusDuration) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                viewHolder.goRightText.setVisibility(View.VISIBLE);
-                mTurning = true;
-                addTurnCommandTimeout(stimulusDuration);
-            }
-        });
-    }
-
-
-    /* make sure that potential scanning will take no longer
- * than <SCANNING_TIMEOUT> seconds from now on */
-    private void addTurnCommandTimeout(int timeoutInMS) {
-        Runnable timeout = new Runnable() {
-            @Override
-            public void run() {
-                viewHolder.goRightText.setVisibility(View.INVISIBLE);
-                viewHolder.goLeftText.setVisibility(View.INVISIBLE);
-                mTurning = false;
-            }
-        };
-        mHandler.postDelayed(timeout, timeoutInMS);
-    }
-
-    /* make sure that potential scanning will take no longer
-* than <SCANNING_TIMEOUT> seconds from now on */
-    private void addScanningTimeout() {
-
-        mHandler.postDelayed(scanTimeout, SCANNING_TIMEOUT);
-    }
-
-
-    /* check if user agreed to enable BT */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // user didn't want to turn on BT
-        if (requestCode == ENABLE_BT_REQUEST_ID) {
-            if (resultCode == Activity.RESULT_CANCELED) {
-                btDisabled();
-                return;
-            }
+        @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_roboroach_main, container, false);
         }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void btDisabled() {
-        Toast.makeText(this, "Sorry, Your bluetooth needs to be turned ON for your RoboRoach to work!", Toast.LENGTH_LONG).show();
-        finish();
-    }
-
-    private void bleMissing() {
-        Toast.makeText(this, "BLE Hardware is required for your RoboRoach. Please try on another device.", Toast.LENGTH_LONG).show();
-        finish();
     }
 
     // Private class for gestures
-    private class SwipeGestureDetector
-            extends SimpleOnGestureListener {
+    private class SwipeGestureDetector extends SimpleOnGestureListener {
         // Swipe properties, you can change it to make the swipe
         // longer or shorter and speed
         private static final int SWIPE_MIN_DISTANCE = 60;
         private static final int SWIPE_MAX_OFF_PATH = 200;
         private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2,
-                               float velocityX, float velocityY) {
+        @Override public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
                 float diffAbs = Math.abs(e1.getY() - e2.getY());
                 float diff = e1.getX() - e2.getX();
 
-                if (diffAbs > SWIPE_MAX_OFF_PATH)
-                    return false;
+                if (diffAbs > SWIPE_MAX_OFF_PATH) return false;
 
                 // Left swipe
-                if (diff > SWIPE_MIN_DISTANCE
-                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                if (diff > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     RoboRoachActivity.this.onLeftSwipe();
 
                     // Right swipe
-                } else if (-diff > SWIPE_MIN_DISTANCE
-                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                } else if (-diff > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     RoboRoachActivity.this.onRightSwipe();
                 }
             } catch (Exception e) {
-                Log.e("RoboRoachActivity", "Error on gestures");
+                LOGE(TAG, "Error on gestures");
             }
             return false;
         }
     }
-
 }
 
 
