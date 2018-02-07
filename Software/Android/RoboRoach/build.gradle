@@ -7,7 +7,7 @@ android {
         applicationId 'com.backyardbrains.roboroach'
         minSdkVersion 18
         targetSdkVersion 27
-        versionCode 4
+        versionCode 5
         versionName "1.2"
     }
 }
