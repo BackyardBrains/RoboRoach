@@ -2,7 +2,6 @@ package com.backyardbrains.roboroach;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -14,12 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -41,36 +38,29 @@ import static com.backyardbrains.roboroach.utils.LogUtils.makeLogTag;
 public class RoboRoachActivity extends AppCompatActivity
     implements RoboRoachManagerCallbacks, EasyPermissions.PermissionCallbacks {
 
-    private final static String TAG = makeLogTag(RoboRoachActivity.class);
+    final static String TAG = makeLogTag(RoboRoachActivity.class);
 
-    private static final int BYB_SETTINGS_SCREEN = 121;
-    private static final int BYB_ACCESS_COARSE_LOCATION_PERM = 122;
+    private static final int REQUEST_CODE_ENABLE_BT = 120;
+    private static final int REQUEST_CODE_SETTINGS_SCREEN = 121;
+    private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM = 122;
 
-    private static final long SCANNING_TIMEOUT = 5 * 1000; /* 5 seconds */
-    private static final int ENABLE_BT_REQUEST_ID = 1;
+    private static final long SCANNING_TIMEOUT = 4 * 1000; /* 4 seconds */
 
-    private boolean mScanning = false;
-    private boolean mTurning = false;
-    private boolean mOnSettingsScreen = false;
+    private static final String RR_DEVICE_NAME = "RoboRoach";
 
-    private String mDeviceAddress;
+    boolean mScanning = false;
+    boolean mTurning = false;
+    boolean mOnSettingsScreen = false;
 
-    private Handler mHandler = new Handler();
-    private RoboRoachManager mRoboRoachManager = null;
-    private ViewHolder viewHolder;
-    private Runnable mGATTUpdate;
-    private int mGATTFreq = 0;
+    String mDeviceAddress;
+
+    Handler mHandler = new Handler();
+    RoboRoachManager mRoboRoachManager = null;
+    ViewHolder viewHolder;
+    Runnable mGATTUpdate;
+    int mGATTFreq = 0;
 
     private GestureDetector gestureDetector;
-
-    Runnable scanTimeout = new Runnable() {
-        @Override public void run() {
-            if (mRoboRoachManager == null) return;
-            mScanning = false;
-            mRoboRoachManager.stopScanning();
-            invalidateOptionsMenu();
-        }
-    };
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,17 +73,12 @@ public class RoboRoachActivity extends AppCompatActivity
         // check if we have BT and BLE on board
         if (!BluetoothUtils.checkBleHardwareAvailable(this)) bleMissing();
 
-        // check if we have location permission
-        checkLocation();
-
         viewHolder = new ViewHolder();
         viewHolder.bind(this);
 
         // set toolbar as actionbar
         setSupportActionBar(viewHolder.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         viewHolder.roachImage.setVisibility(View.VISIBLE);
         viewHolder.backpackImage.setVisibility(View.INVISIBLE);
@@ -203,10 +188,6 @@ public class RoboRoachActivity extends AppCompatActivity
         });
 
         gestureDetector = new GestureDetector(this.getBaseContext(), new SwipeGestureDetector());
-
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
-        }
     }
 
     @Override protected void onResume() {
@@ -217,8 +198,11 @@ public class RoboRoachActivity extends AppCompatActivity
         if (!BluetoothUtils.isBtEnabled(this)) {
             // BT is not turned on - ask user to make it enabled
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_ID);
+            startActivityForResult(enableBtIntent, REQUEST_CODE_ENABLE_BT);
             // see onActivityResult to check what is the status of our request
+        } else {
+            // check if we have location permission
+            checkLocation();
         }
 
         // if RoboRoachManager cannot be initialized we should leave
@@ -237,23 +221,29 @@ public class RoboRoachActivity extends AppCompatActivity
                     mRoboRoachManager.stopMonitoringRssiValue();
                     mRoboRoachManager.disconnect();
                     mRoboRoachManager.close();
+                    invalidateOptionsMenu();
                 }
             });
         } else if (mScanning) {
-            mScanning = false;
-            mRoboRoachManager.stopScanning();
+            stopLeScan();
         }
+    }
 
-        invalidateOptionsMenu();
+    @Override protected void onDestroy() {
+        if (mRoboRoachManager != null) mRoboRoachManager.close();
+        super.onDestroy();
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // check if user agreed to enable BT.
-        if (requestCode == ENABLE_BT_REQUEST_ID) {
+        if (requestCode == REQUEST_CODE_ENABLE_BT) {
             if (resultCode == Activity.RESULT_CANCELED) {
                 // user didn't want to turn on BT
                 btDisabled();
                 return;
+            } else if (resultCode == Activity.RESULT_OK) {
+                // check if we have location permission
+                checkLocation();
             }
         }
 
@@ -291,28 +281,15 @@ public class RoboRoachActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         switch (item.getItemId()) {
             case R.id.menu_scan:
-                mScanning = true;
-                invalidateOptionsMenu();
-                mRoboRoachManager.startScanning();
+                // start LE scan
+                startLeScan();
                 break;
             case R.id.menu_stop:
-                mScanning = false;
-                mRoboRoachManager.stopScanning();
-                invalidateOptionsMenu();
+                // stop LE scan
+                stopLeScan();
                 break;
             case R.id.menu_disconnect:
-                runOnUiThread(new Runnable() {
-                    @Override public void run() {
-                        mRoboRoachManager.disconnect();
-                        mRoboRoachManager.close();
-                        if (mOnSettingsScreen) {
-                            ViewFlipper vf = findViewById(R.id.viewFlipper);
-                            vf.showNext();
-                            mOnSettingsScreen = false;
-                        }
-                        invalidateOptionsMenu();
-                    }
-                });
+                disconnect();
                 break;
             case R.id.menu_settings:
                 if (!mOnSettingsScreen) {
@@ -353,6 +330,11 @@ public class RoboRoachActivity extends AppCompatActivity
 
     @Override public void uiDeviceDisconnected(final BluetoothGatt gatt, final BluetoothDevice device) {
         LOGD(TAG, "uiDeviceDisconnected()");
+
+        // let's reset strongest signal and last connected device address
+        mStrongestSignal = Integer.MIN_VALUE;
+        mDeviceAddress = null;
+
         runOnUiThread(new Runnable() {
             @Override public void run() {
                 viewHolder.configText.setText("");
@@ -388,19 +370,23 @@ public class RoboRoachActivity extends AppCompatActivity
         });
     }
 
+    private int mStrongestSignal = Integer.MIN_VALUE;
+
     @Override public void uiDeviceFound(BluetoothDevice device, int rssi, byte[] record) {
-        LOGD(TAG, "uiDeviceFound()");
+        //LOGD(TAG, "uiDeviceFound()");
 
-        if (mHandler != null) {
-            mHandler.removeCallbacks(scanTimeout);
+        if (device == null || device.getAddress() == null || !RR_DEVICE_NAME.equals(device.getName())) return;
+
+        if (rssi > mStrongestSignal) {
+            LOGD(TAG, "uiDeviceFound() ... Found nearest RoboRoach: " + rssi);
+            mStrongestSignal = rssi;
+            mDeviceAddress = device.getAddress();
         }
+    }
 
-        if (device == null || device.getAddress() == null || device.getName() == null) return;
-
-        mDeviceAddress = device.getAddress();
-
-        if (device.getName().equals("RoboRoach")) {
-            LOGD(TAG, "uiDeviceFound() ...Found a RoboRoach!");
+    void connectToNearestBtDevice() {
+        if (mDeviceAddress != null) {
+            LOGD(TAG, "connectToNearestBtDevice() ... Found a RoboRoach!");
 
             // adding to the UI have to happen in UI thread
             runOnUiThread(new Runnable() {
@@ -408,24 +394,66 @@ public class RoboRoachActivity extends AppCompatActivity
                     viewHolder.backpackImage.setImageAlpha(60);  //slowly builds up until connection
                     viewHolder.backpackImage.setVisibility(View.VISIBLE);
 
-                    LOGD(TAG, "uiDeviceFound() ... mDeviceAddress = " + mDeviceAddress);
+                    LOGD(TAG, "connectToNearestBtDevice() ... mDeviceAddress = " + mDeviceAddress);
 
                     if (mScanning) {
                         mScanning = false;
                         invalidateOptionsMenu();
                         mRoboRoachManager.stopScanning();
-                        LOGD(TAG, "uiDeviceFound() ... mRoboRoachManager.stopScanning()");
+                        LOGD(TAG, "connectToNearestBtDevice() ... mRoboRoachManager.stopScanning()");
                     }
 
-                    LOGD(TAG, "uiDeviceFound() ... about to call mRoboRoachManager.connect()");
+                    LOGD(TAG, "connectToNearestBtDevice() ... about to call mRoboRoachManager.connect()");
                     mRoboRoachManager.connect(mDeviceAddress);
-                    LOGD(TAG, "uiDeviceFound() ... finished calling mRoboRoachManager.connect()");
+                    LOGD(TAG, "connectToNearestBtDevice() ... finished calling mRoboRoachManager.connect()");
                 }
             });
         } else {
-            LOGD(TAG, "uiDeviceFound() ... Found a non-RoboRoach :( !");
+            LOGD(TAG, "connectToNearestBtDevice() ... Couldn't find a RoboRoach! Continue to scan.");
+            mHandler.postDelayed(new Runnable() {
+                @Override public void run() {
+                    connectToNearestBtDevice();
+                }
+            }, SCANNING_TIMEOUT);
         }
     }
+
+    //@Override public void uiDeviceFound(BluetoothDevice device, int rssi, byte[] record) {
+    //    LOGD(TAG, "uiDeviceFound()");
+    //
+    //    if (mHandler != null) mHandler.removeCallbacks(scanTimeout);
+    //
+    //    if (device == null || device.getAddress() == null || device.getName() == null) return;
+    //
+    //    mDeviceAddress = device.getAddress();
+    //
+    //    if (device.getName().equals("RoboRoach")) {
+    //        LOGD(TAG, "uiDeviceFound() ...Found a RoboRoach!");
+    //
+    //        // adding to the UI have to happen in UI thread
+    //        runOnUiThread(new Runnable() {
+    //            @Override public void run() {
+    //                viewHolder.backpackImage.setImageAlpha(60);  //slowly builds up until connection
+    //                viewHolder.backpackImage.setVisibility(View.VISIBLE);
+    //
+    //                LOGD(TAG, "uiDeviceFound() ... mDeviceAddress = " + mDeviceAddress);
+    //
+    //                if (mScanning) {
+    //                    mScanning = false;
+    //                    invalidateOptionsMenu();
+    //                    mRoboRoachManager.stopScanning();
+    //                    LOGD(TAG, "uiDeviceFound() ... mRoboRoachManager.stopScanning()");
+    //                }
+    //
+    //                LOGD(TAG, "uiDeviceFound() ... about to call mRoboRoachManager.connect()");
+    //                mRoboRoachManager.connect(mDeviceAddress);
+    //                LOGD(TAG, "uiDeviceFound() ... finished calling mRoboRoachManager.connect()");
+    //            }
+    //        });
+    //    } else {
+    //        LOGD(TAG, "uiDeviceFound() ... Found a non-RoboRoach :( !");
+    //    }
+    //}
 
     @Override public void uiLeftTurnSentSuccessfully(final int stimulusDuration) {
         runOnUiThread(new Runnable() {
@@ -447,23 +475,50 @@ public class RoboRoachActivity extends AppCompatActivity
         });
     }
 
-    private void onLeftSwipe() {
+    void onLeftSwipe() {
         LOGD(TAG, "onLeftSwipe()");
         if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
             if (!mTurning) mRoboRoachManager.turnLeft();
         }
     }
 
-    private void onRightSwipe() {
+    void onRightSwipe() {
         LOGD(TAG, "onRightSwipe()");
         if (mRoboRoachManager.isConnected() && !mOnSettingsScreen) {
             if (!mTurning) mRoboRoachManager.turnRight();
         }
     }
 
+    private void startLeScan() {
+        mHandler.postDelayed(new Runnable() {
+            @Override public void run() {
+                connectToNearestBtDevice();
+            }
+        }, SCANNING_TIMEOUT);
+        mScanning = true;
+        mRoboRoachManager.startScanning();
+        invalidateOptionsMenu();
+    }
+
+    private void stopLeScan() {
+        mScanning = false;
+        mRoboRoachManager.stopScanning();
+        invalidateOptionsMenu();
+    }
+
+    private void disconnect() {
+        mRoboRoachManager.disconnect();
+        //mRoboRoachManager.close();
+        if (mOnSettingsScreen) {
+            ViewFlipper vf = findViewById(R.id.viewFlipper);
+            vf.showNext();
+            mOnSettingsScreen = false;
+        }
+    }
+
     /* make sure that potential scanning will take no longer
  * than <SCANNING_TIMEOUT> seconds from now on */
-    private void addTurnCommandTimeout(int timeoutInMS) {
+    void addTurnCommandTimeout(int timeoutInMS) {
         Runnable timeout = new Runnable() {
             @Override public void run() {
                 viewHolder.goRightText.setVisibility(View.INVISIBLE);
@@ -472,12 +527,6 @@ public class RoboRoachActivity extends AppCompatActivity
             }
         };
         mHandler.postDelayed(timeout, timeoutInMS);
-    }
-
-    /* make sure that potential scanning will take no longer
-* than <SCANNING_TIMEOUT> seconds from now on */
-    private void addScanningTimeout() {
-        mHandler.postDelayed(scanTimeout, SCANNING_TIMEOUT);
     }
 
     private void btDisabled() {
@@ -511,17 +560,17 @@ public class RoboRoachActivity extends AppCompatActivity
                 .setTitle(R.string.title_settings_dialog)
                 .setPositiveButton(R.string.action_setting)
                 .setNegativeButton(R.string.action_cancel)
-                .setRequestCode(BYB_SETTINGS_SCREEN)
+                .setRequestCode(REQUEST_CODE_SETTINGS_SCREEN)
                 .build()
                 .show();
         }
     }
 
-    @AfterPermissionGranted(BYB_ACCESS_COARSE_LOCATION_PERM) void checkLocation() {
+    @AfterPermissionGranted(REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM) void checkLocation() {
         if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             // Request the permission
             EasyPermissions.requestPermissions(this, getString(R.string.rationale_access_coarse_location),
-                BYB_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION);
+                REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION);
         }
     }
 
@@ -544,7 +593,7 @@ public class RoboRoachActivity extends AppCompatActivity
         Switch RandomMode;
 
         // Binds UI elements to local variables
-        void bind(Activity activity) {
+        void bind(@NonNull Activity activity) {
             toolbar = activity.findViewById(R.id.toolbar);
             roachImage = activity.findViewById(R.id.imageRoach);
             backpackImage = activity.findViewById(R.id.imageBackpack);
@@ -556,19 +605,6 @@ public class RoboRoachActivity extends AppCompatActivity
             Frequecy = activity.findViewById(R.id.sbFrequency);
             PulseWidth = activity.findViewById(R.id.sbPulseWidth);
             RandomMode = activity.findViewById(R.id.swRandomMode);
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_roboroach_main, container, false);
         }
     }
 
@@ -589,11 +625,11 @@ public class RoboRoachActivity extends AppCompatActivity
 
                 // Left swipe
                 if (diff > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    RoboRoachActivity.this.onLeftSwipe();
+                    onLeftSwipe();
 
                     // Right swipe
                 } else if (-diff > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    RoboRoachActivity.this.onRightSwipe();
+                    onRightSwipe();
                 }
             } catch (Exception e) {
                 LOGE(TAG, "Error on gestures");
