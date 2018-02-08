@@ -6,11 +6,22 @@ android {
     defaultConfig {
         applicationId 'com.backyardbrains.roboroach'
         minSdkVersion 18
-        targetSdkVersion 25
-        versionCode 4
+        targetSdkVersion 27
+        versionCode 5
         versionName "1.2"
     }
 }
 
+ext {
+    supportLibraryVersion = '27.0.2'
+    easyPermissionsVersion = '1.1.3'
+}
+
 dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    // support library
+    implementation "com.android.support:support-compat:$supportLibraryVersion"
+    // permissions
+    implementation "pub.devrel:easypermissions:$easyPermissionsVersion"
+    implementation 'com.android.support:design:27.0.2'
 }

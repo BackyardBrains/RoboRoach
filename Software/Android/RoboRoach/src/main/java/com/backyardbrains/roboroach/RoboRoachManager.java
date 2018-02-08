@@ -1,11 +1,5 @@
 package com.backyardbrains.roboroach;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,12 +11,11 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.util.Log;
-import java.nio.ByteBuffer;
-
-
+import com.backyardbrains.roboroach.utils.GattUtils;
+import java.util.List;
+import java.util.UUID;
 
 public class RoboRoachManager {
 
@@ -56,29 +49,22 @@ public class RoboRoachManager {
     /* define NULL object for UI callbacks */
     private static final RoboRoachManagerCallbacks NULL_CALLBACK = new RoboRoachManagerCallbacks.Null();
 
-    /* creates BleWrapper object, set its parent activity and callback object */
-    public RoboRoachManager(Activity parent, RoboRoachManagerCallbacks callback) {
-        this.mParent = parent;
-        mUiCallback = callback;
-        if(mUiCallback == null) mUiCallback = NULL_CALLBACK;
-    }
+    private Activity mParent = null;
+    private boolean mConnected = false;
+    private String mDeviceAddress = "";
 
-    public BluetoothManager           getManager() { return mBluetoothManager; }
-    public BluetoothAdapter           getAdapter() { return mBluetoothAdapter; }
-    public BluetoothDevice            getDevice()  { return mBluetoothDevice; }
-    public BluetoothGatt              getGatt()    { return mBluetoothGatt; }
-    public BluetoothGattService       getCachedService() { return mBluetoothSelectedService; }
-    public List<BluetoothGattService> getCachedServices() { return mBluetoothGattServices; }
-    public boolean                    isConnected() { return mConnected; }
-    public int                        getRoboRoachFrequency() { return rrFrequency; }
-    public int                        getRoboRoachGain() { return rrGain; }
-    public int                        getRoboRoachPulseWidth() { return rrPulseWidth; }
-    public int                        getRoboRoachDuration() { return rrDuration; }
-    public boolean                    getRoboRoachRandomMode()  { return rrRandomMode; }
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private BluetoothDevice mBluetoothDevice = null;
+    private BluetoothGatt mBluetoothGatt = null;
+    private BluetoothGattService mBluetoothSelectedService = null;
+    private List<BluetoothGattService> mBluetoothGattServices = null;
 
-    private BluetoothGattService    mInfoService;
-    private BluetoothGattService    mRoboRoachService;
-    private BluetoothGattService    mBatteryService;
+    private BluetoothGattService mInfoService;
+    private BluetoothGattService mRoboRoachService;
+    private BluetoothGattService mBatteryService;
+
+    private Handler mTimerHandler = new Handler();
+    private boolean mTimerEnabled = false;
 
     private static int rrFrequency;
     private static int rrPulseWidth;
@@ -87,55 +73,80 @@ public class RoboRoachManager {
     private static boolean rrRandomMode = false;
     private static int rrBatteryLevel = 0;
 
-    public int getRoboRoachBatteryLevel() { return rrBatteryLevel; }
-    public String getRoboRoachConfigurationString() {
-        if (rrRandomMode) {
-            return "Randomized Stimulus. " + rrGain +"%";
-        } else {
-            return rrFrequency + "Hz, " + rrPulseWidth + "ms Pulse, for " + rrDuration + "ms. " + rrGain +"%";
-        }
+    /* creates BleWrapper object, set its parent activity and callback object */
+    public RoboRoachManager(Activity parent, RoboRoachManagerCallbacks callback) {
+        this.mParent = parent;
+        mUiCallback = callback;
+        if (mUiCallback == null) mUiCallback = NULL_CALLBACK;
     }
 
-    /* run test and check if this device has BT and BLE hardware available */
-    public boolean checkBleHardwareAvailable() {
-        // First check general Bluetooth Hardware:
-        // get BluetoothManager...
-        final BluetoothManager manager = (BluetoothManager) mParent.getSystemService(Context.BLUETOOTH_SERVICE);
-        if(manager == null) return false;
-        // .. and then get adapter from manager
-        final BluetoothAdapter adapter = manager.getAdapter();
-        if(adapter == null) return false;
+    public BluetoothAdapter getAdapter() {
+        return mBluetoothAdapter;
+    }
 
-        // and then check if BT LE is also available
-        boolean hasBle = mParent.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
-        return hasBle;
+    public BluetoothDevice getDevice() {
+        return mBluetoothDevice;
+    }
+
+    public BluetoothGatt getGatt() {
+        return mBluetoothGatt;
+    }
+
+    public BluetoothGattService getCachedService() {
+        return mBluetoothSelectedService;
+    }
+
+    public List<BluetoothGattService> getCachedServices() {
+        return mBluetoothGattServices;
+    }
+
+    public boolean isConnected() {
+        return mConnected;
+    }
+
+    public int getRoboRoachFrequency() {
+        return rrFrequency;
+    }
+
+    public int getRoboRoachGain() {
+        return rrGain;
+    }
+
+    public int getRoboRoachPulseWidth() {
+        return rrPulseWidth;
+    }
+
+    public int getRoboRoachDuration() {
+        return rrDuration;
+    }
+
+    public boolean getRoboRoachRandomMode() {
+        return rrRandomMode;
+    }
+
+    public int getRoboRoachBatteryLevel() {
+        return rrBatteryLevel;
+    }
+
+    public String getRoboRoachConfigurationString() {
+        if (rrRandomMode) {
+            return "Randomized Stimulus. " + rrGain + "%";
+        } else {
+            return rrFrequency + "Hz, " + rrPulseWidth + "ms Pulse, for " + rrDuration + "ms. " + rrGain + "%";
+        }
     }
 
     public void requestRoboRoachParameters() {
         if (mRoboRoachService == null) return;
 
         requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_FREQUENCY));
-
-    }
-
-    /* before any action check if BT is turned ON and enabled for us
-     * call this in onResume to be always sure that BT is ON when Your
-     * application is put into the foreground */
-    public boolean isBtEnabled() {
-        final BluetoothManager manager = (BluetoothManager) mParent.getSystemService(Context.BLUETOOTH_SERVICE);
-        if(manager == null) return false;
-
-        final BluetoothAdapter adapter = manager.getAdapter();
-        if(adapter == null) return false;
-
-        return adapter.isEnabled();
     }
 
     /* set new value for turn right */
     public void turnRight() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null || mRoboRoachService == null) return;
 
-        final byte[] dataToWrite = new byte[] { (byte)0x01 };
+        final byte[] dataToWrite = new byte[] { (byte) 0x01 };
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_STIMULATE_RIGHT);
 
         // first set it locally....
@@ -148,7 +159,7 @@ public class RoboRoachManager {
     public void turnLeft() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null || mRoboRoachService == null) return;
 
-        final byte[] dataToWrite = new byte[] { (byte)0x01 };
+        final byte[] dataToWrite = new byte[] { (byte) 0x01 };
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_STIMULATE_LEFT);
 
         // first set it locally....
@@ -157,36 +168,32 @@ public class RoboRoachManager {
         mBluetoothGatt.writeCharacteristic(ch);
     }
 
+    public void updateGain(int gain) {
 
-    public void updateGain( int gain ){
-
-        final byte[] dataToWrite = new byte[] { (byte)gain };
+        final byte[] dataToWrite = new byte[] { (byte) gain };
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_GAIN);
         // first set it locally....
         ch.setValue(dataToWrite);
         // ... and then "commit" changes to the peripheral
         mBluetoothGatt.writeCharacteristic(ch);
         rrGain = gain;
-
     }
 
-    public void updateFrequency( int freq ){
+    public void updateFrequency(int freq) {
 
-        final byte[] dataToWrite = new byte[] { (byte)freq };
+        final byte[] dataToWrite = new byte[] { (byte) freq };
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_FREQUENCY);
         ch.setValue(dataToWrite);
         mBluetoothGatt.writeCharacteristic(ch);
         rrFrequency = freq;
     }
 
-
-    public void updateRandomMode( boolean randomMode ){
-
+    public void updateRandomMode(boolean randomMode) {
         final byte[] dataToWrite;
-        if ( randomMode ) {
-            dataToWrite = new byte[] { (byte)0x01 };
+        if (randomMode) {
+            dataToWrite = new byte[] { (byte) 0x01 };
         } else {
-            dataToWrite = new byte[] { (byte)0x00 };
+            dataToWrite = new byte[] { (byte) 0x00 };
         }
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_RANDOM_MODE);
         ch.setValue(dataToWrite);
@@ -194,9 +201,9 @@ public class RoboRoachManager {
         rrRandomMode = randomMode;
     }
 
-    public void updateDuration( int dur ){
+    public void updateDuration(int dur) {
 
-        final byte[] dataToWrite = new byte[] { (byte) (dur/5) };
+        final byte[] dataToWrite = new byte[] { (byte) (dur / 5) };
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_DURATION_IN_5MS);
         // first set it locally....
         ch.setValue(dataToWrite);
@@ -206,9 +213,9 @@ public class RoboRoachManager {
         rrDuration = dur;
     }
 
-    public void updatePulseWidth( int pw ){
+    public void updatePulseWidth(int pw) {
 
-        final byte[] dataToWrite = new byte[] { (byte)pw };
+        final byte[] dataToWrite = new byte[] { (byte) pw };
         final BluetoothGattCharacteristic ch = mRoboRoachService.getCharacteristic(ROBOROACH_PULSE_WIDTH);
         // first set it locally....
         ch.setValue(dataToWrite);
@@ -220,32 +227,29 @@ public class RoboRoachManager {
 
     /* start scanning for BT LE devices around */
     public void startScanning() {
-        Log.e(TAG, "startScanning()");
+        Log.d(TAG, "startScanning()");
         mBluetoothAdapter.startLeScan(mDeviceFoundCallback);
     }
 
     /* stops current scanning */
     public void stopScanning() {
-        Log.e(TAG, "stopScanning()");
+        Log.d(TAG, "stopScanning()");
         mBluetoothAdapter.stopLeScan(mDeviceFoundCallback);
     }
 
-    /* initialize BLE and get BT Manager & Adapter */
+    /**
+     * Initialize BLE and get BT Manager & Adapter.
+     *
+     * @return {@code True} if initialization was successful, {@code false} otherwise.
+     */
     public boolean initialize() {
         Log.d(TAG, "initialize()");
 
-        if (mBluetoothManager == null) {
-            mBluetoothManager = (BluetoothManager) mParent.getSystemService(Context.BLUETOOTH_SERVICE);
-            if (mBluetoothManager == null) {
-                return false;
-            }
-        }
+        final BluetoothManager btManager = (BluetoothManager) mParent.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (btManager == null) return false;
 
-        if(mBluetoothAdapter == null) mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null) {
-            return false;
-        }
-        return true;
+        if (mBluetoothAdapter == null) mBluetoothAdapter = btManager.getAdapter();
+        return mBluetoothAdapter != null;
     }
 
     /* connect to the device with specified address */
@@ -256,11 +260,10 @@ public class RoboRoachManager {
         Log.d(TAG, "connect()");
 
         // check if we need to connect from scratch or just reconnect to previous device
-        if(mBluetoothGatt != null && mBluetoothGatt.getDevice().getAddress().equals(deviceAddress)) {
+        if (mBluetoothGatt != null && mBluetoothGatt.getDevice().getAddress().equals(deviceAddress)) {
             // just reconnect
             return mBluetoothGatt.connect();
-        }
-        else {
+        } else {
             // connect from scratch
             // get BluetoothDevice object for specified address
             mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(mDeviceAddress);
@@ -271,7 +274,7 @@ public class RoboRoachManager {
             // connect with remote device
             mBluetoothGatt = mBluetoothDevice.connectGatt(mParent, false, mBleCallback);
         }
-        if (mBluetoothGatt == null) Log.e( TAG, "mBluetoothGatt is null!" );
+        if (mBluetoothGatt == null) Log.e(TAG, "mBluetoothGatt is null!");
         return true;
     }
 
@@ -279,14 +282,13 @@ public class RoboRoachManager {
     public void disconnect() {
         Log.d(TAG, "disconnect()");
 
-        if(mBluetoothGatt != null) mBluetoothGatt.disconnect();
-        mUiCallback.uiDeviceDisconnected(mBluetoothGatt, mBluetoothDevice);
+        if (mBluetoothGatt != null) mBluetoothGatt.disconnect();
     }
 
     /* close GATT client completely */
     public void close() {
-        Log.d(TAG, "close()" );
-        if(mBluetoothGatt != null) mBluetoothGatt.close();
+        Log.d(TAG, "close()");
+        if (mBluetoothGatt != null) mBluetoothGatt.close();
         mBluetoothGatt = null;
     }
 
@@ -294,18 +296,14 @@ public class RoboRoachManager {
     public void readPeriodicalyRssiValue(final boolean repeat) {
         mTimerEnabled = repeat;
         // check if we should stop checking RSSI value
-        if(mConnected == false || mBluetoothGatt == null || mTimerEnabled == false) {
+        if (!mConnected || mBluetoothGatt == null || mTimerEnabled == false) {
             mTimerEnabled = false;
             return;
         }
 
         mTimerHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(mBluetoothGatt == null ||
-                        mBluetoothAdapter == null ||
-                        mConnected == false)
-                {
+            @Override public void run() {
+                if (mBluetoothGatt == null || mBluetoothAdapter == null || mConnected == false) {
                     mTimerEnabled = false;
                     return;
                 }
@@ -331,16 +329,16 @@ public class RoboRoachManager {
     /* request to discover all services available on the remote devices
      * results are delivered through callback object */
     public void startServicesDiscovery() {
-        Log.d(TAG, "startServicesDiscovery()" );
-        if(mBluetoothGatt != null) mBluetoothGatt.discoverServices();
+        Log.d(TAG, "startServicesDiscovery()");
+        if (mBluetoothGatt != null) mBluetoothGatt.discoverServices();
     }
 
     /* gets services and calls UI callback to handle them
      * before calling getServices() make sure service discovery is finished! */
     public void getSupportedServices() {
-        Log.d(TAG, "getSupportedServices()" );
+        Log.d(TAG, "getSupportedServices()");
 
-        if(mBluetoothGattServices != null && mBluetoothGattServices.size() > 0) mBluetoothGattServices.clear();
+        if (mBluetoothGattServices != null && mBluetoothGattServices.size() > 0) mBluetoothGattServices.clear();
         // keep reference to all services in local array:
         //if(mBluetoothGatt != null) mBluetoothGattServices = mBluetoothGatt.getServices();
 
@@ -348,27 +346,23 @@ public class RoboRoachManager {
         mBatteryService = mBluetoothGatt.getService(BATTERY_SERVICE_1_1);
         mInfoService = mBluetoothGatt.getService(DEVICE_INFORMATION);
 
-        if(mRoboRoachService != null) mRoboRoachService.getCharacteristics();
-        if(mBatteryService != null)  mBatteryService.getCharacteristics();
-        if(mInfoService != null) mInfoService.getCharacteristics();
+        if (mRoboRoachService != null) mRoboRoachService.getCharacteristics();
+        if (mBatteryService != null) mBatteryService.getCharacteristics();
+        if (mInfoService != null) mInfoService.getCharacteristics();
 
         mUiCallback.uiServicesFound();
     }
 
     /* get all characteristic for particular service and pass them to the UI callback */
     public void getCharacteristicsForService(final BluetoothGattService service) {
-        if(service == null) return;
+        if (service == null) return;
         List<BluetoothGattCharacteristic> chars = null;
 
         chars = service.getCharacteristics();
         //mUiCallback.uiCharacteristicForService(mBluetoothGatt, mBluetoothDevice, service, chars);
         // keep reference to the last selected service
         mBluetoothSelectedService = service;
-
-
     }
-
-
 
     /* request to fetch newest value stored on the remote device for particular characteristic */
     public void requestCharacteristicValue(BluetoothGattCharacteristic ch) {
@@ -376,7 +370,7 @@ public class RoboRoachManager {
 
         mBluetoothGatt.readCharacteristic(ch);
 
-        Log.d(TAG, "requestCharacteristicValue()" );
+        Log.d(TAG, "requestCharacteristicValue()");
         // new value available will be notified in Callback Object
     }
 
@@ -385,17 +379,26 @@ public class RoboRoachManager {
     public void getCharacteristicValue(BluetoothGattCharacteristic ch) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null || ch == null) return;
 
-        if (ch.getUuid().equals(ROBOROACH_FREQUENCY)) rrFrequency = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        if (ch.getUuid().equals(ROBOROACH_PULSE_WIDTH)) rrPulseWidth = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        if (ch.getUuid().equals(ROBOROACH_DURATION_IN_5MS)) rrDuration = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) * 5;
+        if (ch.getUuid().equals(ROBOROACH_FREQUENCY)) {
+            rrFrequency = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+        }
+        if (ch.getUuid().equals(ROBOROACH_PULSE_WIDTH)) {
+            rrPulseWidth = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+        }
+        if (ch.getUuid().equals(ROBOROACH_DURATION_IN_5MS)) {
+            rrDuration = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) * 5;
+        }
         if (ch.getUuid().equals(ROBOROACH_GAIN)) rrGain = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        if (ch.getUuid().equals(ROBOROACH_RANDOM_MODE)) rrRandomMode = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) == 1;
-        if (ch.getUuid().equals(BATTERY_LEVEL)) rrBatteryLevel = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+        if (ch.getUuid().equals(ROBOROACH_RANDOM_MODE)) {
+            rrRandomMode = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) == 1;
+        }
+        if (ch.getUuid().equals(BATTERY_LEVEL)) {
+            rrBatteryLevel = ch.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+        }
 
-        Log.d(TAG, "F=[" + rrFrequency + "]PW=[" + rrPulseWidth + "]" );
+        Log.d(TAG, "F=[" + rrFrequency + "]PW=[" + rrPulseWidth + "]");
 
-
-         //mUiCallback.uiNewValueForCharacteristic(mBluetoothGatt,
+        //mUiCallback.uiNewValueForCharacteristic(mBluetoothGatt,
         //        mBluetoothDevice,
         //        mBluetoothSelectedService,
         //        ch,
@@ -410,14 +413,30 @@ public class RoboRoachManager {
     public int getValueFormat(BluetoothGattCharacteristic ch) {
         int properties = ch.getProperties();
 
-        if((BluetoothGattCharacteristic.FORMAT_FLOAT & properties) != 0) return BluetoothGattCharacteristic.FORMAT_FLOAT;
-        if((BluetoothGattCharacteristic.FORMAT_SFLOAT & properties) != 0) return BluetoothGattCharacteristic.FORMAT_SFLOAT;
-        if((BluetoothGattCharacteristic.FORMAT_SINT16 & properties) != 0) return BluetoothGattCharacteristic.FORMAT_SINT16;
-        if((BluetoothGattCharacteristic.FORMAT_SINT32 & properties) != 0) return BluetoothGattCharacteristic.FORMAT_SINT32;
-        if((BluetoothGattCharacteristic.FORMAT_SINT8 & properties) != 0) return BluetoothGattCharacteristic.FORMAT_SINT8;
-        if((BluetoothGattCharacteristic.FORMAT_UINT16 & properties) != 0) return BluetoothGattCharacteristic.FORMAT_UINT16;
-        if((BluetoothGattCharacteristic.FORMAT_UINT32 & properties) != 0) return BluetoothGattCharacteristic.FORMAT_UINT32;
-        if((BluetoothGattCharacteristic.FORMAT_UINT8 & properties) != 0) return BluetoothGattCharacteristic.FORMAT_UINT8;
+        if ((BluetoothGattCharacteristic.FORMAT_FLOAT & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_FLOAT;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_SFLOAT & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_SFLOAT;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_SINT16 & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_SINT16;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_SINT32 & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_SINT32;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_SINT8 & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_SINT8;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_UINT16 & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_UINT16;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_UINT32 & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_UINT32;
+        }
+        if ((BluetoothGattCharacteristic.FORMAT_UINT8 & properties) != 0) {
+            return BluetoothGattCharacteristic.FORMAT_UINT8;
+        }
 
         return 0;
     }
@@ -437,17 +456,18 @@ public class RoboRoachManager {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) return;
 
         boolean success = mBluetoothGatt.setCharacteristicNotification(ch, enabled);
-        if(!success) {
+        if (!success) {
             Log.e("------", "Seting proper notification status for characteristic failed!");
         }
 
-        Log.d(TAG,ch.toString());
+        Log.d(TAG, ch.toString());
 
         // This is also sometimes required (e.g. for heart rate monitors) to enable notifications/indications
         // see: https://developer.bluetooth.org/gatt/descriptors/Pages/DescriptorViewer.aspx?u=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
         BluetoothGattDescriptor descriptor = ch.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-        if(descriptor != null) {
-            byte[] val = enabled ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE;
+        if (descriptor != null) {
+            byte[] val = enabled ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE;
             descriptor.setValue(val);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
@@ -455,18 +475,17 @@ public class RoboRoachManager {
 
     /* defines callback for scanning results */
     private BluetoothAdapter.LeScanCallback mDeviceFoundCallback = new BluetoothAdapter.LeScanCallback() {
-        @Override
-        public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
-            Log.d(TAG, "mDeviceFoundCallback()" );
+        @Override public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
+            //Log.d(TAG, "mDeviceFoundCallback()");
             mUiCallback.uiDeviceFound(device, rssi, scanRecord);
         }
     };
 
     /* callbacks called for any action on particular Ble Device */
     private final BluetoothGattCallback mBleCallback = new BluetoothGattCallback() {
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        @Override public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+
                 mConnected = true;
                 mUiCallback.uiDeviceConnected(mBluetoothGatt, mBluetoothDevice);
 
@@ -481,28 +500,21 @@ public class RoboRoachManager {
                 Log.d(TAG, BYB_ROBOROACH_SERVICE.toString());
                 // and we also want to get RSSI value to be updated periodically
                 //startMonitoringRssiValue();
-            }
-            else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnected = false;
                 mUiCallback.uiDeviceDisconnected(mBluetoothGatt, mBluetoothDevice);
             }
         }
 
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+        @Override public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 // now, when services discovery is finished, we can call getServices() for Gatt
                 getSupportedServices();
             }
         }
 
-
-
         @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status)
-        {
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             Log.d(TAG, "onCharacteristicRead()");
 
             // we got response regarding our request to fetch characteristic value
@@ -511,22 +523,28 @@ public class RoboRoachManager {
                 getCharacteristicValue(characteristic);
 
                 //Hack.   Walk through the values.
-                if (characteristic.getUuid().equals( ROBOROACH_FREQUENCY)) requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_PULSE_WIDTH));
-                if (characteristic.getUuid().equals( ROBOROACH_PULSE_WIDTH)) requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_DURATION_IN_5MS));
-                if (characteristic.getUuid().equals( ROBOROACH_DURATION_IN_5MS)) requestCharacteristicValue(mRoboRoachService.getCharacteristic( ROBOROACH_RANDOM_MODE));
-                if (characteristic.getUuid().equals( ROBOROACH_RANDOM_MODE)) requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_GAIN));
-                if (characteristic.getUuid().equals( ROBOROACH_GAIN)) requestCharacteristicValue(mBatteryService.getCharacteristic(BATTERY_LEVEL));
-                if (characteristic.getUuid().equals( BATTERY_LEVEL)){
+                if (characteristic.getUuid().equals(ROBOROACH_FREQUENCY)) {
+                    requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_PULSE_WIDTH));
+                }
+                if (characteristic.getUuid().equals(ROBOROACH_PULSE_WIDTH)) {
+                    requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_DURATION_IN_5MS));
+                }
+                if (characteristic.getUuid().equals(ROBOROACH_DURATION_IN_5MS)) {
+                    requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_RANDOM_MODE));
+                }
+                if (characteristic.getUuid().equals(ROBOROACH_RANDOM_MODE)) {
+                    requestCharacteristicValue(mRoboRoachService.getCharacteristic(ROBOROACH_GAIN));
+                }
+                if (characteristic.getUuid().equals(ROBOROACH_GAIN)) {
+                    requestCharacteristicValue(mBatteryService.getCharacteristic(BATTERY_LEVEL));
+                }
+                if (characteristic.getUuid().equals(BATTERY_LEVEL)) {
                     mUiCallback.uiRoboRoachPropertiesUpdated();
                 }
-
             }
         }
 
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic)
-        {
+        @Override public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Log.d(TAG, "onCharacteristicChanged()");
             // characteristic's value was updated due to enabled notification, lets get this value
             // the value itself will be reported to the UI inside getCharacteristicValue
@@ -537,39 +555,24 @@ public class RoboRoachManager {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            Log.d( TAG, "onCharacteristicWrite(" + status +")" );
+            Log.d(TAG, "onCharacteristicWrite(" + status + ")");
             // we got response regarding our request to write new value to the characteristic
             // let see if it failed or not
-            if(status == BluetoothGatt.GATT_SUCCESS) {
-                if (characteristic.getUuid().equals(ROBOROACH_STIMULATE_LEFT) ) {
-                    mUiCallback.uiLeftTurnSentSuccessfully( rrDuration );
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                if (characteristic.getUuid().equals(ROBOROACH_STIMULATE_LEFT)) {
+                    mUiCallback.uiLeftTurnSentSuccessfully(rrDuration);
                 }
-                if (characteristic.getUuid().equals(ROBOROACH_STIMULATE_RIGHT) ) {
-                    mUiCallback.uiRightTurnSentSuccessfully( rrDuration );
+                if (characteristic.getUuid().equals(ROBOROACH_STIMULATE_RIGHT)) {
+                    mUiCallback.uiRightTurnSentSuccessfully(rrDuration);
                 }
             }
         }
 
-        @Override
-        public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-            if(status == BluetoothGatt.GATT_SUCCESS) {
+        @Override public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
                 // we got new value of RSSI of the connection, pass it to the UI
                 //mUiCallback.uiNewRssiAvailable(mBluetoothGatt, mBluetoothDevice, rssi);
             }
         }
     };
-
-    private Activity mParent = null;
-    private boolean mConnected = false;
-    private String mDeviceAddress = "";
-
-    private BluetoothManager mBluetoothManager = null;
-    private BluetoothAdapter mBluetoothAdapter = null;
-    private BluetoothDevice  mBluetoothDevice = null;
-    private BluetoothGatt    mBluetoothGatt = null;
-    private BluetoothGattService mBluetoothSelectedService = null;
-    private List<BluetoothGattService> mBluetoothGattServices = null;
-
-    private Handler mTimerHandler = new Handler();
-    private boolean mTimerEnabled = false;
 }
