@@ -53,7 +53,6 @@ public class RoboRoachManager {
     private boolean mConnected = false;
     private String mDeviceAddress = "";
 
-    private BluetoothManager mBluetoothManager = null;
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothDevice mBluetoothDevice = null;
     private BluetoothGatt mBluetoothGatt = null;
@@ -79,10 +78,6 @@ public class RoboRoachManager {
         this.mParent = parent;
         mUiCallback = callback;
         if (mUiCallback == null) mUiCallback = NULL_CALLBACK;
-    }
-
-    public BluetoothManager getManager() {
-        return mBluetoothManager;
     }
 
     public BluetoothAdapter getAdapter() {
@@ -194,7 +189,6 @@ public class RoboRoachManager {
     }
 
     public void updateRandomMode(boolean randomMode) {
-
         final byte[] dataToWrite;
         if (randomMode) {
             dataToWrite = new byte[] { (byte) 0x01 };
@@ -251,12 +245,10 @@ public class RoboRoachManager {
     public boolean initialize() {
         Log.d(TAG, "initialize()");
 
-        if (mBluetoothManager == null) {
-            mBluetoothManager = (BluetoothManager) mParent.getSystemService(Context.BLUETOOTH_SERVICE);
-            if (mBluetoothManager == null) return false;
-        }
+        final BluetoothManager btManager = (BluetoothManager) mParent.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (btManager == null) return false;
 
-        if (mBluetoothAdapter == null) mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) mBluetoothAdapter = btManager.getAdapter();
         return mBluetoothAdapter != null;
     }
 
@@ -291,7 +283,6 @@ public class RoboRoachManager {
         Log.d(TAG, "disconnect()");
 
         if (mBluetoothGatt != null) mBluetoothGatt.disconnect();
-        mUiCallback.uiDeviceDisconnected(mBluetoothGatt, mBluetoothDevice);
     }
 
     /* close GATT client completely */
@@ -305,7 +296,7 @@ public class RoboRoachManager {
     public void readPeriodicalyRssiValue(final boolean repeat) {
         mTimerEnabled = repeat;
         // check if we should stop checking RSSI value
-        if (mConnected == false || mBluetoothGatt == null || mTimerEnabled == false) {
+        if (!mConnected || mBluetoothGatt == null || mTimerEnabled == false) {
             mTimerEnabled = false;
             return;
         }
@@ -485,7 +476,7 @@ public class RoboRoachManager {
     /* defines callback for scanning results */
     private BluetoothAdapter.LeScanCallback mDeviceFoundCallback = new BluetoothAdapter.LeScanCallback() {
         @Override public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
-            Log.d(TAG, "mDeviceFoundCallback()");
+            //Log.d(TAG, "mDeviceFoundCallback()");
             mUiCallback.uiDeviceFound(device, rssi, scanRecord);
         }
     };
@@ -494,6 +485,7 @@ public class RoboRoachManager {
     private final BluetoothGattCallback mBleCallback = new BluetoothGattCallback() {
         @Override public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+
                 mConnected = true;
                 mUiCallback.uiDeviceConnected(mBluetoothGatt, mBluetoothDevice);
 
