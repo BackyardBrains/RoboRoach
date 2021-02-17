@@ -571,10 +571,10 @@ public class RoboRoachActivity extends AppCompatActivity
     }
 
     @AfterPermissionGranted(REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM) void checkLocation() {
-        if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Request the permission
             EasyPermissions.requestPermissions(this, getString(R.string.rationale_access_coarse_location),
-                REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION);
+                    REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
