@@ -1,27 +1,25 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 29
     defaultConfig {
         applicationId 'com.backyardbrains.roboroach'
         minSdkVersion 18
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 5
         versionName "1.2"
     }
 }
 
 ext {
-    supportLibraryVersion = '27.0.2'
     easyPermissionsVersion = '1.1.3'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    // support library
-    implementation "com.android.support:support-compat:$supportLibraryVersion"
+    // androidx library
+    implementation 'androidx.core:core:1.3.2'
     // permissions
     implementation "pub.devrel:easypermissions:$easyPermissionsVersion"
-    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.google.android.material:material:1.3.0'
 }
