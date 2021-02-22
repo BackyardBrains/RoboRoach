@@ -5,7 +5,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * @author Tihomir Leka <ticapeca at gmail.com.

@@ -8,9 +8,6 @@ import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
@@ -25,8 +22,15 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.backyardbrains.roboroach.utils.BluetoothUtils;
+
 import java.util.List;
+
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -567,10 +571,10 @@ public class RoboRoachActivity extends AppCompatActivity
     }
 
     @AfterPermissionGranted(REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM) void checkLocation() {
-        if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Request the permission
             EasyPermissions.requestPermissions(this, getString(R.string.rationale_access_coarse_location),
-                REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION);
+                    REQUEST_CODE_ACCESS_COARSE_LOCATION_PERM, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
